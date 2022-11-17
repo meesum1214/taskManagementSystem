@@ -2,8 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = [
     { id: 1, title: 'Tasks to be done!' },
-    { id: 2, title: 'Tasks on which working!' },
-    { id: 3, title: 'Tasks that are done!' },
+    // { id: 2, title: 'Tasks on which working!' },
+    // { id: 3, title: 'Tasks that are done!' },
 ]
 
 export const taskBoxSlice = createSlice({
@@ -13,11 +13,14 @@ export const taskBoxSlice = createSlice({
         addNewTaskBox: (state, action) => {
             state.push({ title: action.payload })
         },
+        removeTaskBox: (state, action) => {
+            state.splice(action.payload, 1)
+        },
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { addNewTaskBox } = taskBoxSlice.actions
+export const { addNewTaskBox, removeTaskBox } = taskBoxSlice.actions
 
 export const selectTaskBoxId = (state, id) => state.taskBox.find((item) => item.id === id)
 
