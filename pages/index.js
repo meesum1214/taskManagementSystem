@@ -4,7 +4,6 @@ import { useState } from "react"
 import { useSelector, useDispatch } from 'react-redux'
 import { addNewBoard } from "../global/slices/boardSlice"
 
-
 export default () => {
 
   const currentBoard = useSelector(state => state.board)
