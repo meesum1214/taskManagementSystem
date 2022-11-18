@@ -10,6 +10,13 @@ import { useSelector, useDispatch, Provider } from 'react-redux'
 import { removeTaskBox, selectTaskBoxId } from "../global/slices/taskBoxSlice";
 import { resetServerContext } from "react-beautiful-dnd";
 import dynamic from 'next/dynamic';
+import { getBoardsData } from "../firebase/FirebaseFunctions";
+// import { database } from "../firebase/initFirebase";
+
+import { database, storage } from "../firebase/initFirebase";
+import { ref, onValue, set } from "firebase/database";
+
+
 
 const DragDropContext = dynamic(
     () =>
@@ -39,12 +46,14 @@ export default () => {
 
     const [newCard, setNewCard] = useState(false)
 
+    const [boardsData, setBoardsData] = useState([])
+
     const [uploadImg, setUploadImg] = useState([])
     const [uploadMsg, setUploadMsg] = useState('')
 
-    const dispatch = useDispatch()
+    // const dispatch = useDispatch()
 
-    const taskBox = useSelector((state) => state.taskBox)
+    // const taskBox = useSelector((state) => state.taskBox)
     // const cardList = useSelector(state => state.cardList)
 
     // console.log('>> ', taskBox[0])
@@ -71,16 +80,137 @@ export default () => {
     ])
 
 
+
+    // useEffect to get data from realtime firebase database
+
+    // const [boardData, setBoardData] = useState()
+
+    // const [boardData, setBoardData] = useState()
+
+
+    useEffect(() => {
+        // const dbRef = ref(database, 'accessUser/dsafjsdfsdfsdfh/');
+        // onValue(dbRef, (snapshot) => {
+        //     const data = snapshot.val();
+        //     // console.log('alotted boards', data)
+
+        getBoardsData(router.query.slug, setBoardsData)
+
+
+        // });
+
+
+
+        // set(dbRef, {
+        //     accessUser: {
+        //         dsafjsdfsdfsdfh: [
+        //             { boardName: 'Board1' },
+        //         ]
+        //     },
+        //     Board1: {
+        //         lists: [
+        //             {
+        //                 cards:[
+        //                     { img: '/img1.jpg', msg: 'Text of card one!' },
+        //                     { img: '/img2.jpg', msg: 'Text of card two!' },
+        //                 ]
+        //             },
+        //             {
+        //                 cards:[
+        //                     { img: '/img2.jpg', msg: 'Text of card two!' },
+        //                 ]
+        //             },
+        //         ]
+        //     }
+        // })
+
+
+
+    }, [])
+
+
+
+
+
+
+    // Add a new data to firebase realtime database
+    // set(dbRef, {
+    //     ...data,
+
+    //     card1: {
+    //         image: 'hello',
+    //         message: 'hello'
+    //     }
+
+    // });
+
+
+    // Add Data in database
+    // set(dbRef, {
+    //     list: {
+    //         card: {
+    //             image: 'hello',
+    //             message: 'hello'
+    //         }
+    //     }
+    // });
+
+
+
+
+
+
+
+
+
+
+
     const handleDragEnd = (result) => {
         if (!result.destination) return;
 
-        const items = Array.from(cardListArray);
+        console.log('result: ', result)
+
+        console.log('board Data:   >', boardsData[+result.destination.droppableId].data)
+
+        const items = Array.from(boardsData[+result.destination.droppableId].data);
         const [reorderedItem] = items.splice(result.source.index, 1);
         items.splice(result.destination.index, 0, reorderedItem);
+        console.log('items: ', items)
 
         // dispatch(updateListCard(items))
-        setCardListArray(items)
+        // setCardListArray(items)
         // console.log(items)
+        //  boardsData[+result.destination.droppableId] = item
+
+        // setBoardData([...boardData, items])
+        set(ref(database, `${router.query.slug}/${+result.destination.droppableId}/data/`), items)
+
+
+
+
+        // If the user moves from one column to another
+        // const startTaskIds = Array.from(boardsData[+result.destination.droppableId].data);
+        // const [removed] = startTaskIds.splice(result.source.index, 1);
+        // const newStartCol = {
+        //     ...sourceCol,
+        //     taskIds: startTaskIds,
+        // };
+
+        // const endTaskIds = Array.from(destinationCol.taskIds);
+        // endTaskIds.splice(destination.index, 0, removed);
+        // const newEndCol = {
+        //     ...destinationCol,
+        //     taskIds: endTaskIds,
+        // };
+
+        // const newState = {
+        //     ...state,
+        //     columns: {
+        //         ...state.columns,
+        //         [newStartCol.id]: newStartCol,
+        //         [newEndCol.id]: newEndCol,
+        //     },
+        // };
     }
 
 
@@ -92,20 +222,20 @@ export default () => {
 
             <div className="w-full grid grid-cols-3 gap-4">
                 {
-                    taskBox?.map((item, i) => {
-                        const taskBoxId = useSelector((state) => selectTaskBoxId(state, item.id))
+                    boardsData?.map((item, i) => {
+                        // const taskBoxId = useSelector((state) => selectTaskBoxId(state, item.id))
 
                         return (
-                            <div key={item.id} className="w-80 bg-[#DFE3E6] rounded-sm shadow-sm p-2">
+                            <div key={i + 'list'} className="w-80 bg-[#DFE3E6] rounded-sm shadow-sm p-2">
                                 <div className="w-full flex justify-between items-center pb-4">
-                                    <div className="font-semibold">{item.title}</div>
+                                    <div className="font-semibold">{item.listName}</div>
                                     <AiFillDelete className="text-gray-500 cursor-pointer" size={20}
-                                        onClick={() => console.log('task Box>> ', taskBoxId)}
+                                    // onClick={() => console.log('task Box>> ', taskBoxId)}
                                     />
                                 </div>
 
                                 <DragDropContext onDragEnd={handleDragEnd}>
-                                    <Droppable droppableId="list">
+                                    <Droppable droppableId={i.toString()}>
                                         {
                                             (provided) => (
                                                 <div
@@ -113,9 +243,9 @@ export default () => {
                                                     ref={provided.innerRef}
                                                 >
                                                     {
-                                                        cardListArray?.map(({ id, img, msg }, i) => {
+                                                        item.data?.map((item, i) => {
                                                             return (
-                                                                <Draggable key={msg} index={i} draggableId={msg}>
+                                                                <Draggable key={(i + 'card').toString()} index={i} draggableId={(i + 'card').toString()}>
                                                                     {
                                                                         (provided) => (
                                                                             <div className="mb-4 bg-white p-2"
@@ -124,18 +254,18 @@ export default () => {
                                                                                 {...provided.dragHandleProps}
                                                                             >
                                                                                 <div className="flex flex-1 justify-between">
-                                                                                    <div className="font-semibold text-gray-500 mb-2">{msg}</div>
+                                                                                    <div className="font-semibold text-gray-500 mb-2">{item.card.msg}</div>
                                                                                     <AiFillDelete
                                                                                         className="text-gray-500 cursor-pointer"
                                                                                         size={20}
                                                                                         onClick={() => {
                                                                                             // dispatch(removeListCard(i, 1))
-                                                                                            setCardListArray(cardListArray.filter((item, index) => index !== i))
+                                                                                            // setCardListArray(cardListArray.filter((item, index) => index !== i))
                                                                                         }}
                                                                                     />
                                                                                 </div>
                                                                                 <img
-                                                                                    src={img}
+                                                                                    src={item.card.img}
                                                                                     width="100%"
                                                                                     className="rounded-sm"
                                                                                 />
