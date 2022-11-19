@@ -1,5 +1,5 @@
-import { database, storage } from "./initFirebase";
-import { ref, onValue, set } from "firebase/database";
+import { database } from "./initFirebase";
+import { ref, onValue } from "firebase/database";
 
 
 export const getBoards = ({setBoards}) => {
@@ -7,13 +7,14 @@ export const getBoards = ({setBoards}) => {
 
      onValue(dbRef, (snapshot) => {
         const data = snapshot.val();
-        console.log('alotted boards', data)
+        // console.log('alotted boards', data)
         setBoards(data)
     });
 }
 
 export const getBoardsData = (boardName, setBoardsData) => {
-    const boardData = ref(database, `${boardName}`);
+    // console.log('boardName: ', boardName)
+    const boardData = ref(database, `${boardName}/`);
     onValue(boardData, (snapshot) => {
         let data = snapshot.val();
         console.log('board data ======', data)

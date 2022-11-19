@@ -4,15 +4,9 @@ import { Droppable } from "react-beautiful-dnd";
 
 const Column = ({ column, tasks }) => {
     return (
-        <div
-            className="rounded-[3px] bg-[#1E2631] w-[400px] h-[620px] flex flex-col"
-        >
-            <div
-                className="flex justify-between items-center px-[1.5rem] mb-[1.5rem]"
-            >
-                <div
-                    className="text-gray-400 font-semibold text-lg"
-                >
+        <div className="rounded-sm bg-[#16181D] w-96 flex flex-col mr-6">
+            <div className="flex justify-between items-center px-[4rem] h-[60px] bg-[#242731] rounded-sm rounded-b-none">
+                <div className="text-[17px] font-bold text-subtle-text">
                     {column.title}
                 </div>
             </div>
@@ -20,24 +14,31 @@ const Column = ({ column, tasks }) => {
             <Droppable droppableId={column.id}>
                 {(droppableProvided, droppableSnapshot) => (
                     <div
-                        className="flex flex-col flex-1 px-[1.5rem]"
+                        className="px-[1.5rem] flex-1 flex-col pt-6"
                         ref={droppableProvided.innerRef}
                         {...droppableProvided.droppableProps}
                     >
-                        {tasks.map((task, index) => (
-                            <Draggable key={task.id} draggableId={`${task.id}`} index={index}>
-                                {(draggableProvided, draggableSnapshot) => (
-                                    <div
-                                        className="mb-[1rem] h-[72px] bg-[#2A3440] rounded-[3px] p-[1.5rem] outline-[2px] outline-solid outline-transparent"
-                                        ref={draggableProvided.innerRef}
-                                        {...draggableProvided.draggableProps}
-                                        {...draggableProvided.dragHandleProps}
-                                    >
-                                        <div>{task.content}</div>
-                                    </div>
-                                )}
-                            </Draggable>
-                        ))}
+                        {
+                            tasks?.map((task, index) => (
+                                <Draggable key={task.id} draggableId={`${task.id}`} index={index}>
+                                    {(draggableProvided, draggableSnapshot) => (
+                                        <div
+                                            className="mb-[1rem] bg-[#242731] rounded-[3px] p-[1.5rem]"
+                                            ref={draggableProvided.innerRef}
+                                            {...draggableProvided.draggableProps}
+                                            {...draggableProvided.dragHandleProps}
+                                        >
+                                            <div>{task.content}</div>
+                                            <img
+                                                src={task.img}
+                                                alt={task.img}
+                                                className="w-[100%] rounded-sm mt-2"
+                                            />
+                                        </div>
+                                    )}
+                                </Draggable>
+                            ))
+                        }
                         {droppableProvided.placeholder}
                     </div>
                 )}

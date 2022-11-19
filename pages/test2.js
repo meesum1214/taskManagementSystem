@@ -139,7 +139,7 @@ export default () => {
           <div className="text-3xl font-bold">
             React Beautiful Drag and Drop
           </div>
-          <div className="font-[20px] font-bold">
+          <div className="font-bold">
             react-beautiful-dnd
           </div>
         </div>
