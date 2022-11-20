@@ -24,22 +24,42 @@ export default ({ boardsData }) => {
     const handleAddCard = () => {
         console.log('listTitle: ', listTitle)
 
+        let colName = `column-${Object.keys(boardsData.columns).length + 1}`
 
-        set(ref(database, `${router.query.slug}/columns/`),
-            {
+        var test = ["no tasks"]
+
+        const newCol = {
+            id: colName,
+            title: listTitle,
+            taskIds: test,
+        };
+
+        const newState = {
+            ...boardsData,
+            columns: {
                 ...boardsData.columns,
-                [keysLength]: {
-                    id: keysLength,
-                    title: listTitle,
-                    taskIds: [],
-                }
+                [newCol.id]: newCol,
             },
-        )
+            columnOrder: [...boardsData.columnOrder, newCol.id],
+        };
 
-        set(ref(database, `${router.query.slug}/columnOrder/`), [
-            ...boardsData.columnOrder,
-            keysLength,
-        ])
+
+        set(ref(database, `${router.query.slug}/`), {
+            ...boardsData,
+            columns: {
+                ...boardsData.columns,
+                [newCol.id]: newCol
+            },
+            columnOrder: [
+                ...boardsData.columnOrder,
+                newCol.id,
+            ]
+        })
+
+        // set(ref(database, `${router.query.slug}/columnOrder/`), [
+        //     ...boardsData.columnOrder,
+        //     keysLength,
+        // ])
 
         setState(false)
         setListTitle('')

@@ -71,31 +71,78 @@ export default () => {
             return;
         }
 
-        // If the user moves from one column to another
+
+
+
+
+
+
+        // If the user moves from one column to another column
         const startTaskIds = Array.from(sourceCol.taskIds);
         const [removed] = startTaskIds.splice(source.index, 1);
+        console.log("removed =======================>", removed);
+        console.log("startTaskIds =======================>", startTaskIds);
+
+        var test = startTaskIds
+        if (test.length === 0) { test = ["no tasks"] }
+
+
+
         const newStartCol = {
             ...sourceCol,
-            taskIds: startTaskIds,
+            taskIds: test,
         };
 
-        const endTaskIds = Array.from(destinationCol.taskIds);
-        endTaskIds.splice(destination.index, 0, removed);
-        const newEndCol = {
-            ...destinationCol,
-            taskIds: endTaskIds,
-        };
 
-        const newState = {
-            ...boardsData,
-            columns: {
-                ...boardsData.columns,
-                [newStartCol.id]: newStartCol,
-                [newEndCol.id]: newEndCol,
-            },
-        };
 
-        set(ref(database, `${router.query.slug}/`), newState);
+        // if (destinationCol.taskIds[0] === "no tasks") {
+        //     const endTaskIds = [];
+        //     endTaskIds.splice(destination.index, 0, removed);
+        //     const newEndCol = {
+        //         ...destinationCol,
+        //         taskIds: endTaskIds,
+        //     };
+
+        //     const newState = {
+        //         ...boardsData,
+        //         columns: {
+        //             ...boardsData.columns,
+        //             [newStartCol.id]: newStartCol,
+        //             [newEndCol.id]: newEndCol,
+        //         },
+        //     };
+        //     set(ref(database, `${router.query.slug}/`), newState);
+        // }
+        // else {
+            // if(destinationCol.taskIds.includes("no tasks")) {
+
+            //     // destinationCol.taskIds.splice(destinationCol.taskIds.indexOf("no tasks"), 1)
+            // }
+            let endTaskIds = Array.from(destinationCol.taskIds);
+
+            // if (endTaskIds[0] === "no tasks") {
+            //     endTaskIds = [];
+            // }
+
+
+            endTaskIds.splice(destination.index, 0, removed);
+            const newEndCol = {
+                ...destinationCol,
+                taskIds: endTaskIds,
+            };
+
+            const newState = {
+                ...boardsData,
+                columns: {
+                    ...boardsData.columns,
+                    [newStartCol.id]: newStartCol,
+                    [newEndCol.id]: newEndCol,
+                },
+            };
+
+
+            set(ref(database, `${router.query.slug}/`), newState);
+        // }
     };
 
     return (
@@ -113,6 +160,7 @@ export default () => {
                         boardsData ?
                             boardsData.columnOrder?.map((columnId) => {
                                 const column = boardsData.columns[columnId];
+                                // const tasks = column.taskIds.includes("no tasks") ? null : column?.taskIds?.map((taskId) => boardsData.tasks[taskId]);
                                 const tasks = column?.taskIds?.map((taskId) => boardsData.tasks[taskId]);
 
                                 return <Column key={column.id} column={column} tasks={tasks} />;

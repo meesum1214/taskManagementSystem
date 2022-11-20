@@ -21,6 +21,10 @@ export const getBoardsData = (boardName, setBoardsData) => {
         // data.tasks.map((item) => {
         //     item.tasks
         // })
+    data.columnOrder.map((item, b)=>{           
+            // console.log(a.columns[item])
+            data.columns[item].taskIds.includes("no tasks")? data.columns[item].taskIds = [] : data.columns[item].taskIds
+        })
         setBoardsData(data)
 
         

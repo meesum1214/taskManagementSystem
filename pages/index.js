@@ -16,35 +16,35 @@ export default () => {
     getBoards({ setBoards })
 
     // set(ref(database, 'project task board4/'),
-    // {
-    //   tasks: {
-    //     1: { id: 1, content: "Configure Next.js application", img: "/img1.jpg" },
-    //     2: { id: 2, content: "Configure Next.js and tailwind ", img: "/img2.jpg" },
-    //     3: { id: 3, content: "Create sidebar navigation menu", img: "/img3.jpg" },
-    //     4: { id: 4, content: "Create page footer", img: "/img4.jpg" },
-    //     5: { id: 5, content: "Create page navigation menu", img: "/img5.jpg" },
-    //     6: { id: 6, content: "Create page layout", img: "/img6.jpg" },
-    //   },
-    //   columns: {
-    //     "column-1": {
-    //       id: "column-1",
-    //       title: "TO-DO",
-    //       taskIds: [1, 2, 5],
+    //   {
+    //     tasks: {
+    //       1: { id: 1, content: "Configure Next.js application", img: "/img1.jpg" },
+    //       2: { id: 2, content: "Configure Next.js and tailwind ", img: "/img2.jpg" },
+    //       3: { id: 3, content: "Create sidebar navigation menu", img: "/img3.jpg" },
+    //       4: { id: 4, content: "Create page footer", img: "/img4.jpg" },
+    //       5: { id: 5, content: "Create page navigation menu", img: "/img5.jpg" },
+    //       6: { id: 6, content: "Create page layout", img: "/img6.jpg" },
     //     },
-    //     "column-2": {
-    //       id: "column-2",
-    //       title: "IN-PROGRESS",
-    //       taskIds: [3, 4],
+    //     columns: {
+    //       "column-1": {
+    //         id: "column-1",
+    //         title: "TO-DO",
+    //         taskIds: [1, 2, 3, 4, 5, 6],
+    //       },
+    //       "column-2": {
+    //         id: "column-2",
+    //         title: "IN-PROGRESS",
+    //         taskIds: [],
+    //       },
+    //       "column-3": {
+    //         id: "column-3",
+    //         title: "COMPLETED",
+    //         taskIds: [],
+    //       },
     //     },
-    //     "column-3": {
-    //       id: "column-3",
-    //       title: "COMPLETED",
-    //       taskIds: [6],
-    //     },
-    //   },
-    //   // Facilitate reordering of the columns
-    //   columnOrder: ["column-1", "column-2", "column-3"],
-    // }
+    //     // Facilitate reordering of the columns
+    //     columnOrder: ["column-1", "column-2", "column-3"],
+    //   }
     // )
 
 
