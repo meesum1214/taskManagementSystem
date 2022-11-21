@@ -13,11 +13,7 @@ export default ({ column, columnId, allTasks }) => {
 
     const [boardsData, setBoardsData] = useState({})
 
-    // useEffect(() => {
-    //     getBoards
-    //     console.log( ': =============== ', boardsData.columns)
-    //     // console.log('============= ', boardsData.columns[column].taskIds)
-    // }, [])
+    const [percent, setPercent] = useState(0)
 
 
     const router = useRouter();
@@ -60,10 +56,12 @@ export default ({ column, columnId, allTasks }) => {
                 console.log('Upload is ' + progress + '% done');
                 switch (snapshot.state) {
                     case 'paused':
-                        console.log('Upload is paused');
+                        // console.log('Upload is paused');
+                        setPercent(progress)
                         break;
                     case 'running':
-                        console.log('Upload is running');
+                        // console.log('Upload is running');
+                        setPercent(progress)
                         break;
                 }
             },
@@ -97,49 +95,49 @@ export default ({ column, columnId, allTasks }) => {
                 }).then((url) => {
                     console.log(allTasks)
                     if (column.taskIds.length === 0) {
-                        let b = allTasks[allTasks.length-1].id + 1
-                        let t = {...allTasks};
+                        let b = allTasks[allTasks.length - 1].id + 1
+                        let t = { ...allTasks };
                         // t.unshift(null);
 
-                    
-                        t[b] =   {
-                            id: allTasks[allTasks.length-1].id + 1,
+
+                        t[b] = {
+                            id: allTasks[allTasks.length - 1].id + 1,
                             content: taskTitle,
                             img: url
                         }
-                        set(ref(database, router.query.slug+'/tasks/'), t).then(() => {
+                        set(ref(database, router.query.slug + '/tasks/'), t).then(() => {
                             set(ref(database, `${router.query.slug}/columns/${columnId}`), {
                                 ...column,
                                 taskIds: [
-                                    
-                                    allTasks[allTasks.length-1].id + 1
+
+                                    allTasks[allTasks.length - 1].id + 1
                                 ]
                             })
                         })
                     }
 
-                    else{
-                        let b = allTasks[allTasks.length-1].id + 1
-                        let t = {...allTasks};
+                    else {
+                        let b = allTasks[allTasks.length - 1].id + 1
+                        let t = { ...allTasks };
                         // t.unshift(null);
 
-                    
-                        t[b] =   {
-                            id: allTasks[allTasks.length-1].id + 1,
+
+                        t[b] = {
+                            id: allTasks[allTasks.length - 1].id + 1,
                             content: taskTitle,
                             img: url
                         }
-                        set(ref(database, router.query.slug+'/tasks/'), t).then(() => {
+                        set(ref(database, router.query.slug + '/tasks/'), t).then(() => {
                             set(ref(database, `${router.query.slug}/columns/${columnId}`), {
                                 ...column,
                                 taskIds: [
                                     ...column.taskIds,
-                                    allTasks[allTasks.length-1].id + 1
+                                    allTasks[allTasks.length - 1].id + 1
                                 ]
                             })
                         })
                     }
-                    
+
                     // if (column.taskIds == "no tasks") {
                     //     set(ref(database, `${router.query.slug}/`), {
                     //         ...boardsData,
@@ -237,9 +235,13 @@ export default ({ column, columnId, allTasks }) => {
             {/* <button className="text-white text-lg px-4 py-2 rounded-sm bg-[#238636]" onClick={() => console.log(keysLength)}>check</button> */}
             {
                 !state ?
-                    <div className="flex items-center px-4 py-2 rounded-sm text-white bg-[#c5c5c513] cursor-pointer" onClick={() => setState(true)}>
-                        <BsPlusLg size={16} />
-                        <div className="ml-2">Add new task</div>
+                    <div>
+                        <div className="flex items-center px-4 py-2 mb-3 rounded-sm text-white bg-[#c5c5c513] cursor-pointer" onClick={() => setState(true)}>
+                            <BsPlusLg size={16} />
+                            <div className="ml-2">Add new task</div>
+                        </div>
+                        {percent > 0 && <div className="text-white text-sm text-center font-semibold">Uploading Image : {percent} %</div>}
+                        {percent === 100 && setPercent(0)}
                     </div>
                     :
                     <div className="w-full bg-[#242731] p-2 rounded-md">

@@ -5,11 +5,15 @@ import { ref, onValue } from "firebase/database";
 export const getBoards = ({setBoards}) => {
     const dbRef = ref(database, 'accessUser/dsafjsdfsdfsdfh/');
 
-     onValue(dbRef, (snapshot) => {
+     try{onValue(dbRef, (snapshot) => {
         const data = snapshot.val();
         // console.log('alotted boards', data)
         setBoards(data)
-    });
+    });}
+    catch(err){
+        console.log(err)
+        setBoards([])
+    }
 }
 
 export const getBoardsData = (boardName, setBoardsData) => {

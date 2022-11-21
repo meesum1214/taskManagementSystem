@@ -82,9 +82,16 @@ export default () => {
       columnOrder: ["column-1"],
     });
 
-    set(ref(database, 'accessUser/dsafjsdfsdfsdfh/'), [
-      ...boards, { boardName: boardTitle }
-    ])
+    if(boards){
+      set(ref(database, 'accessUser/dsafjsdfsdfsdfh/'), [
+        ...boards, { boardName: boardTitle }
+      ])
+    }
+    else{
+      set(ref(database, 'accessUser/dsafjsdfsdfsdfh/'), [
+         { boardName: boardTitle }
+      ])
+    }
 
     setBoardTitle('')
   }
