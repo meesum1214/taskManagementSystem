@@ -23,6 +23,7 @@ export default ({ boardsData }) => {
 
     const handleAddCard = () => {
         // console.log('listTitle: ', listTitle)
+        if (!listTitle) { return }
 
         let colName = `column-${Object.keys(boardsData.columns).length + 1}`
 
