@@ -34,14 +34,14 @@ export default ({ boardsData }) => {
             taskIds: test,
         };
 
-        const newState = {
-            ...boardsData,
-            columns: {
-                ...boardsData.columns,
-                [newCol.id]: newCol,
-            },
-            columnOrder: [...boardsData.columnOrder, newCol.id],
-        };
+        // const newState = {
+        //     ...boardsData,
+        //     columns: {
+        //         ...boardsData.columns,
+        //         [newCol.id]: newCol,
+        //     },
+        //     columnOrder: [...boardsData.columnOrder, newCol.id],
+        // };
 
 
         set(ref(database, `${router.query.slug}/`), {
@@ -56,11 +56,6 @@ export default ({ boardsData }) => {
             ]
         })
 
-        // set(ref(database, `${router.query.slug}/columnOrder/`), [
-        //     ...boardsData.columnOrder,
-        //     keysLength,
-        // ])
-
         setState(false)
         setListTitle('')
     }
@@ -70,12 +65,12 @@ export default ({ boardsData }) => {
             {/* <button className="text-white text-lg px-4 py-2 rounded-sm bg-[#238636]" onClick={() => console.log(keysLength)}>check</button> */}
             {
                 !state ?
-                    <div className="flex items-center px-4 py-2 rounded-sm text-white bg-[#c5c5c513] cursor-pointer" onClick={() => setState(true)}>
+                    <div className="flex items-center w-52 px-4 py-2 rounded-sm text-white bg-[#c5c5c513] cursor-pointer" onClick={() => setState(true)}>
                         <BsPlusLg size={16} />
                         <div className=" ml-2">Create new list</div>
                     </div>
                     :
-                    <div className="w-72 bg-[#242731] p-2 rounded-md">
+                    <div className="w-52 bg-[#242731] p-2 rounded-md">
                         <TextInput
                             placeholder="Enter list title..."
                             className="w-full"

@@ -3,10 +3,10 @@ import { Draggable } from "react-beautiful-dnd";
 import { Droppable } from "react-beautiful-dnd";
 import AddTask from "./AddTask";
 
-const Column = ({ column, tasks }) => {
+const Column = ({ column, tasks, columnId, allTasks }) => {
     return (
-        <div className="rounded-sm bg-[#16181D] w-96 flex flex-col mr-6">
-            <div className="flex justify-between items-center px-[4rem] h-[60px] bg-[#242731] rounded-sm rounded-b-none">
+        <div className="rounded-sm bg-[#16181D] flex flex-col mr-6 w-64 ">
+            <div className="flex justify-between items-center w-full px-[4rem] h-[60px] bg-[#242731] rounded-sm rounded-b-none">
                 <div className="text-[17px] font-bold text-subtle-text">
                     {column.title}
                 </div>
@@ -42,7 +42,7 @@ const Column = ({ column, tasks }) => {
                         }
                         {droppableProvided.placeholder}
                         <div className="mb-4">
-                            <AddTask />
+                            <AddTask column={column} columnId={columnId} allTasks={allTasks} />
                         </div>
                     </div>
                 )}

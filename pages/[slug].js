@@ -1,3 +1,4 @@
+import { ScrollArea } from "@mantine/core";
 import { ref, set } from "firebase/database";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -148,35 +149,40 @@ export default () => {
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <div className="flex flex-col bg-[#0E1012] min-h-screen w-full text-white pb-[2rem]">
-                <div className="p-[4rem] flex justify-between">
-                    <div className="text-3xl font-bold">
-                        Task Management System
+            <div className="flex justify-center bg-[#0E1012] min-h-screen w-full text-white pt-10">
+                <div className="max-w-[1100px]">
+                    <div className="w-full flex justify-between items-center pb-6">
+                        <div className="text-3xl font-bold">
+                            Task Management System
+                        </div>
+                        <button className="text-white text-lg px-4 py-1 rounded-sm bg-[#238636] hover:bg-[#2daa46] active:bg-[#238636] "><Link href="/">Go Back</Link></button>
                     </div>
-                    <button className="text-white text-lg px-4 py-2 rounded-sm bg-[#238636]"><Link href="/">Go Back</Link></button>
-                </div>
-
-                <div className="flex px-[4rem]">
-                    {
-                        boardsData ?
-                            boardsData.columnOrder?.map((columnId) => {
-                                const column = boardsData.columns[columnId];
-                                // const tasks = column.taskIds.includes("no tasks") ? null : column?.taskIds?.map((taskId) => boardsData.tasks[taskId]);
-
-                                if (!column.taskIds) {
-                                    set(ref(database, `${router.query.slug}/columns/${columnId}/taskIds`), ["no tasks"])
-                                }
 
 
-                                const tasks = column?.taskIds?.map((taskId) => boardsData.tasks[taskId]);
-                                return <Column key={column.id} column={column} tasks={tasks} />;
-                            })
-                            :
+                    <ScrollArea className="w-full pb-6">
+                        <div className="w-full flex">
+                            {
+                                boardsData ?
+                                    boardsData.columnOrder?.map((columnId) => {
+                                        const column = boardsData.columns[columnId];
+                                        // const tasks = column.taskIds.includes("no tasks") ? null : column?.taskIds?.map((taskId) => boardsData.tasks[taskId]);
+
+                                        if (!column.taskIds) {
+                                            set(ref(database, `${router.query.slug}/columns/${columnId}/taskIds`), ["no tasks"])
+                                        }
+
+
+                                        const tasks = column?.taskIds?.map((taskId) => boardsData.tasks[taskId]);
+                                        return <Column key={column.id} column={column} tasks={tasks} columnId={columnId} allTasks={boardsData.tasks} />;
+                                    })
+                                    :
+                                    <AddColumn boardsData={boardsData} />
+                            }
                             <AddColumn boardsData={boardsData} />
-                    }
-                    <AddColumn boardsData={boardsData} />
+                        </div>
+                    </ScrollArea>
                 </div>
-            </div>
-        </DragDropContext>
+            </div >
+        </DragDropContext >
     );
 }
