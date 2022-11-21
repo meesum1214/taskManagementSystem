@@ -34,12 +34,12 @@ export default () => {
     //       "column-2": {
     //         id: "column-2",
     //         title: "IN-PROGRESS",
-    //         taskIds: [],
+    //         taskIds: ["no tasks"],
     //       },
     //       "column-3": {
     //         id: "column-3",
     //         title: "COMPLETED",
-    //         taskIds: [],
+    //         taskIds: ["no tasks"],
     //       },
     //     },
     //     // Facilitate reordering of the columns

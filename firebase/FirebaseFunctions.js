@@ -17,13 +17,13 @@ export const getBoardsData = (boardName, setBoardsData) => {
     const boardData = ref(database, `${boardName}/`);
     onValue(boardData, (snapshot) => {
         let data = snapshot.val();
-        console.log('board data ======', data)
+        // console.log('board data ======', data)
         // data.tasks.map((item) => {
         //     item.tasks
         // })
     data.columnOrder.map((item, b)=>{           
             // console.log(a.columns[item])
-            data.columns[item].taskIds.includes("no tasks")? data.columns[item].taskIds = [] : data.columns[item].taskIds
+            data.columns[item].taskIds?.includes("no tasks") ? data.columns[item].taskIds = [] : data.columns[item].taskIds
         })
         setBoardsData(data)
 

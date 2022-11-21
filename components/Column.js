@@ -1,6 +1,7 @@
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { Droppable } from "react-beautiful-dnd";
+import AddTask from "./AddTask";
 
 const Column = ({ column, tasks }) => {
     return (
@@ -40,9 +41,13 @@ const Column = ({ column, tasks }) => {
                             ))
                         }
                         {droppableProvided.placeholder}
+                        <div className="mb-4">
+                            <AddTask />
+                        </div>
                     </div>
                 )}
             </Droppable>
+
         </div>
     );
 };

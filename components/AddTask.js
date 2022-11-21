@@ -10,56 +10,26 @@ export default ({ boardsData }) => {
 
     const router = useRouter();
     const [state, setState] = useState(false)
-    const [listTitle, setListTitle] = useState('')
+    const [taskTitle, setTaskTitle] = useState('')
 
-    // let KeysLength = Object.keys(boardsData.columns).length
-    const [keysLength, setKeysLength] = useState()
-    useEffect(() => {
-        if (boardsData.columns) {
-            setKeysLength(`column-${Object.keys(boardsData.columns).length + 1}`)
-        }
-    }, [boardsData.columns])
+
 
 
     const handleAddCard = () => {
-        // console.log('listTitle: ', listTitle)
-
-        let colName = `column-${Object.keys(boardsData.columns).length + 1}`
-
-        var test = ["no tasks"]
-
-        const newCol = {
-            id: colName,
-            title: listTitle,
-            taskIds: test,
-        };
-
-        const newState = {
-            ...boardsData,
-            columns: {
-                ...boardsData.columns,
-                [newCol.id]: newCol,
-            },
-            columnOrder: [...boardsData.columnOrder, newCol.id],
-        };
 
 
-        set(ref(database, `${router.query.slug}/`), {
-            ...boardsData,
-            columns: {
-                ...boardsData.columns,
-                [newCol.id]: newCol
-            },
-            columnOrder: [
-                ...boardsData.columnOrder,
-                newCol.id,
-            ]
-        })
 
-        // set(ref(database, `${router.query.slug}/columnOrder/`), [
-        //     ...boardsData.columnOrder,
-        //     keysLength,
-        // ])
+        // set(ref(database, `${router.query.slug}/`), {
+        //     ...boardsData,
+        //     columns: {
+        //         ...boardsData.columns,
+        //         [newCol.id]: newCol
+        //     },
+        //     columnOrder: [
+        //         ...boardsData.columnOrder,
+        //         newCol.id,
+        //     ]
+        // })
 
         setState(false)
         setListTitle('')
@@ -72,15 +42,15 @@ export default ({ boardsData }) => {
                 !state ?
                     <div className="flex items-center px-4 py-2 rounded-sm text-white bg-[#c5c5c513] cursor-pointer" onClick={() => setState(true)}>
                         <BsPlusLg size={16} />
-                        <div className=" ml-2">Create new list</div>
+                        <div className="ml-2">Add new task</div>
                     </div>
                     :
                     <div className="w-72 bg-[#242731] p-2 rounded-md">
                         <TextInput
                             placeholder="Enter list title..."
                             className="w-full"
-                            value={listTitle}
-                            onChange={(e) => setListTitle(e.currentTarget.value)}
+                            value={taskTitle}
+                            onChange={(e) => setTaskTitle(e.currentTarget.value)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && listTitle !== '') { handleAddCard(); setState(false) }
                             }}
