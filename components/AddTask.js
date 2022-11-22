@@ -1,17 +1,16 @@
 import { TextInput, Text, Image, SimpleGrid } from "@mantine/core";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BsPlusLg } from "react-icons/bs";
 import { RiCloseLine } from "react-icons/ri";
 import { database, storage } from "../firebase/initFirebase";
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { ref, set } from "firebase/database";
 import { ref as ref_storage, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-// import storageeRef from "../firebase/initFirebase";
 
 export default ({ column, columnId, allTasks }) => {
 
-    const [boardsData, setBoardsData] = useState({})
+    // const [boardsData, setBoardsData] = useState({})
 
     const [percent, setPercent] = useState(0)
 
