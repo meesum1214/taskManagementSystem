@@ -1,31 +1,26 @@
 import '../styles/globals.css'
-import { Provider } from 'react-redux'
-import { store } from '../global/store'
 import auth from '../firebase/initFirebase'
-import { onAuthStateChanged } from 'firebase/auth';
+import { useEffect, useState } from 'react'
 
 function MyApp({ Component, pageProps }) {
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/firebase.User
-      const uid = user.uid;
-      console.log('user data: ', user)
-      // ...
-    } else {
-      // User is signed out
-      // ...
-      console.log('user is signed out')
-    }
-  });
+  const [Loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false)
+    }, 500);
+  }, [])
 
 
 
   return (
-    <Provider store={store}>
-      <Component {...pageProps} />
-    </Provider>
+    <div>
+      {/* Loading Wheel */}
+      <div className={`double-up fixed w-screen h-screen ${Loading ? 'flex' : 'hidden'} justify-center items-center bg-[#ffffff3b]`} style={{ display: !Loading && "none" }}></div>
+
+      <Component {...pageProps} setLoading={setLoading} />
+    </div>
   )
 }
 

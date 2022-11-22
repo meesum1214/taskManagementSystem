@@ -4,16 +4,31 @@ import { useEffect, useState } from "react"
 import { database } from "../firebase/initFirebase";
 import { ref, set } from "firebase/database";
 import { getBoards } from "../firebase/FirebaseFunctions"
+import { useRouter } from "next/router";
+import NavBar from "../components/NavBar";
 
 export default () => {
 
   const [boardTitle, setBoardTitle] = useState('')
-
   const [boards, setBoards] = useState([])
+  const [Loading, setLoading] = useState(true);
+
+  const router = useRouter()
 
   useEffect(() => {
 
-    getBoards({ setBoards })
+
+    if (!localStorage.getItem('peretz-auth-token')) {
+      router.push('/login')
+    }
+
+    getBoards({ setBoards, setLoading })
+    // setTimeout(() => {
+    //   setLoading(false)
+    // }, 700);
+
+
+
 
     // set(ref(database, 'project task board4/'),
     //   {
@@ -82,14 +97,14 @@ export default () => {
       columnOrder: ["column-1"],
     });
 
-    if(boards){
+    if (boards) {
       set(ref(database, 'accessUser/dsafjsdfsdfsdfh/'), [
         ...boards, { boardName: boardTitle }
       ])
     }
-    else{
+    else {
       set(ref(database, 'accessUser/dsafjsdfsdfsdfh/'), [
-         { boardName: boardTitle }
+        { boardName: boardTitle }
       ])
     }
 
@@ -97,36 +112,41 @@ export default () => {
   }
 
   return (
-    <div className="flex flex-col items-center pt-8">
+    <div>
+      {/* Loading Wheel */}
+      <div className={`double-up fixed w-screen h-screen ${Loading ? 'flex' : 'hidden'} justify-center items-center bg-[#ffffff3b]`} style={{ display: !Loading && "none" }}></div>
 
-      <div className="w-[90%] mt-10 mb-4">
-        <div className="text-5xl text-gray-200 font-bold mb-4">Create your board</div>
+      <NavBar />
+      <div className="flex flex-col items-center pt-8">
 
-        <TextInput
-          placeholder="Your Board Title..."
-          className="w-96"
-          value={boardTitle}
-          onChange={(e) => setBoardTitle(e.currentTarget.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && boardTitle !== '') { onPressEnter() }
-          }}
-        />
+        <div className="w-[90%] mt-10 mb-4">
+          <div className="text-5xl text-gray-200 font-bold mb-4">Create your board</div>
+
+          <TextInput
+            placeholder="Your Board Title..."
+            className="w-96"
+            value={boardTitle}
+            onChange={(e) => setBoardTitle(e.currentTarget.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && boardTitle !== '') { onPressEnter() }
+            }}
+          />
+        </div>
+
+
+        <div className="w-[90%] flex flex-wrap">
+          {
+            boards?.map((board, i) => (
+              <Link key={i} href={`/${board.boardName}`}>
+                <div
+                  className="cursor-pointer w-52 h-32 m-2 bg-[#161B22] shadow-md flex justify-center items-center font-semibold text-white rounded-md border border-gray-400">{board.boardName}
+                </div>
+              </Link>
+            ))
+          }
+        </div>
+
       </div>
-
-
-      <div className="w-[90%] flex flex-wrap">
-        {
-          boards?.map((board, i) => (
-            <Link key={i} href={`/${board.boardName}`}>
-              <div
-                className="cursor-pointer w-52 h-32 m-2 bg-[#161B22] shadow-md flex justify-center items-center font-semibold text-white rounded-md border border-gray-400">{board.boardName}
-              </div>
-            </Link>
-          ))
-        }
-      </div>
-
-
     </div>
   )
 }

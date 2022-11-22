@@ -11,6 +11,7 @@ export default ({ boardsData }) => {
     const router = useRouter();
     const [state, setState] = useState(false)
     const [listTitle, setListTitle] = useState('')
+    
 
     // let KeysLength = Object.keys(boardsData.columns).length
     const [keysLength, setKeysLength] = useState()

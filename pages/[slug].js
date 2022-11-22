@@ -25,13 +25,21 @@ const reorderColumnList = (sourceCol, startIndex, endIndex) => {
 };
 
 export default () => {
-    const router = useRouter();
 
+    const router = useRouter();
+    const [Loading, setLoading] = useState(true);
     const [boardsData, setBoardsData] = useState({})
 
     useEffect(() => {
+        if (!localStorage.getItem('peretz-auth-token')) {
+            router.push('/login')
+        }
+
         if (router.query.slug) {
             getBoardsData(router.query.slug, setBoardsData)
+            setTimeout(() => {
+                setLoading(false)
+            }, 700);
         }
     }, [router.query.slug])
 
@@ -149,13 +157,18 @@ export default () => {
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
+
+            {/* Loading Wheel */}
+            <div className={`double-up fixed w-screen h-screen z-50 ${Loading ? 'flex' : 'hidden'} justify-center items-center bg-[#ffffff3b]`} style={{ display: !Loading && "none" }}></div>
+
+
             <div className="flex justify-center bg-[#0E1012] min-h-screen w-full text-white pt-10">
                 <div className="max-w-[1100px]">
                     <div className="w-full flex justify-between items-center pb-6">
                         <div className="text-3xl font-bold">
                             Task Management System
                         </div>
-                        <button className="text-white text-lg px-4 py-1 rounded-sm bg-[#238636] hover:bg-[#2daa46] active:bg-[#238636] "><Link href="/">Go Back</Link></button>
+                        <Link href="/"><button className="text-white text-lg px-4 py-1 rounded-sm bg-[#238636] hover:bg-[#2daa46] active:bg-[#238636] ">Go Back</button></Link>
                     </div>
 
 
