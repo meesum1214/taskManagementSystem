@@ -14,7 +14,6 @@ export default ({ column, columnId, allTasks }) => {
 
     const [percent, setPercent] = useState(0)
 
-
     const router = useRouter();
     const [state, setState] = useState(false)
     const [taskTitle, setTaskTitle] = useState('')
@@ -52,7 +51,7 @@ export default ({ column, columnId, allTasks }) => {
             (snapshot) => {
                 // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
                 const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                console.log('Upload is ' + progress + '% done');
+                // console.log('Upload is ' + progress + '% done');
                 switch (snapshot.state) {
                     case 'paused':
                         // console.log('Upload is paused');
@@ -250,7 +249,7 @@ export default ({ column, columnId, allTasks }) => {
                             value={taskTitle}
                             onChange={(e) => setTaskTitle(e.currentTarget.value)}
                             onKeyDown={(e) => {
-                                if (e.key === 'Enter' && listTitle !== '') { handleAddCard(); setState(false) }
+                                if (e.key === 'Enter') { handleAddCard(); setState(false) }
                             }}
                         />
                         <div className="my-4">

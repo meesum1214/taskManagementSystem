@@ -23,6 +23,7 @@ export default () => {
             .then((userCredential) => {
                 const user = userCredential.user;
                 localStorage.setItem('peretz-auth-token', user.accessToken)
+                localStorage.setItem('peretz-user-id', user.uid)
                 router.push('/')
                 setLoading(false)
             })

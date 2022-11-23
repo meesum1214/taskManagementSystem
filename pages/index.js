@@ -98,12 +98,12 @@ export default () => {
     });
 
     if (boards) {
-      set(ref(database, 'accessUser/dsafjsdfsdfsdfh/'), [
+      set(ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`), [
         ...boards, { boardName: boardTitle }
       ])
     }
     else {
-      set(ref(database, 'accessUser/dsafjsdfsdfsdfh/'), [
+      set(ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`), [
         { boardName: boardTitle }
       ])
     }
@@ -136,13 +136,16 @@ export default () => {
 
         <div className="w-[90%] flex flex-wrap">
           {
-            boards?.map((board, i) => (
-              <Link key={i} href={`/${board.boardName}`}>
-                <div
-                  className="cursor-pointer w-52 h-32 m-2 bg-[#161B22] shadow-md flex justify-center items-center font-semibold text-white rounded-md border border-gray-400">{board.boardName}
-                </div>
-              </Link>
-            ))
+            boards ?
+              boards.map((board, i) => (
+                <Link key={i} href={`/${board.boardName}`}>
+                  <div
+                    className="cursor-pointer w-52 h-32 m-2 bg-[#161B22] shadow-md flex justify-center items-center font-semibold text-white rounded-md border border-gray-400">{board.boardName}
+                  </div>
+                </Link>
+              ))
+              :
+              <div className="text-lg text-gray-300 font-bold mt-6">No Boards...</div>
           }
         </div>
 

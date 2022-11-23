@@ -4,7 +4,7 @@ import { signOut } from "firebase/auth";
 
 
 export const getBoards = ({ setBoards, setLoading }) => {
-    const dbRef = ref(database, 'accessUser/dsafjsdfsdfsdfh/');
+    const dbRef = ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`);
 
     try {
         onValue(dbRef, (snapshot) => {
@@ -37,3 +37,13 @@ export const getBoardsData = (boardName, setBoardsData) => {
         setBoardsData(data)
     })
 }
+
+// export const getUserRecord = () => {
+//     const userData = ref(database, 'accessUser/');
+//     const temp = onValue(userData, (snapshot) => {
+//         const data = snapshot.val();
+//         console.log('user data: ', data)
+//         return data
+//     })
+//     return temp
+// }

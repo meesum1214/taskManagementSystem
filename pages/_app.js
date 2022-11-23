@@ -1,5 +1,4 @@
 import '../styles/globals.css'
-import auth from '../firebase/initFirebase'
 import { useEffect, useState } from 'react'
 
 function MyApp({ Component, pageProps }) {

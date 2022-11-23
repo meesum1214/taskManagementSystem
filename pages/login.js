@@ -1,8 +1,10 @@
 import Link from "next/link"
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase/initFirebase";
-import { useState } from "react";
+import { auth, database } from "../firebase/initFirebase";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { ref, set } from "firebase/database";
+import { getUserRecord } from "../firebase/FirebaseFunctions";
 
 
 export default () => {
@@ -10,6 +12,13 @@ export default () => {
     const [Loading, setLoading] = useState(false);
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [userRecord, setUserRecord] = useState(null)
+
+    // useEffect(() => {
+    //     setUserRecord(getUserRecord())
+    //     console.log('userRecord: ', userRecord)
+    // }, [])
+    
 
     const onLogin = () => {
         setLoading(true)
@@ -25,7 +34,19 @@ export default () => {
                 // Signed in 
                 const user = userCredential.user;
                 localStorage.setItem('peretz-auth-token', user.accessToken)
-                // console.log(userCredential.user)
+                localStorage.setItem('peretz-user-id', user.uid)
+                // console.log(userCredential.user.uid)
+
+          
+
+                // if(!userRecord.userCredential.user.uid){
+                //     const userRef = ref(database, `accessUser/${userCredential.user.uid}`);
+
+                //     set(userRef, [
+                //         { boardName: 'sample board' }
+                //     ])
+                // }
+
                 router.push('/')
                 setLoading(false)
                 // ...

@@ -1,15 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import AddTask from "./AddTask";
+import { AiFillEdit } from "react-icons/ai";
+import EditColumn from "./EditColumn";
+import EditTask from "./EditTask";
 
-const Column = ({ column, tasks, columnId, allTasks }) => {
+const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds }) => {
+
+    const [columnEdit, setColumnEdit] = useState(false)
+    const [taskEdit, setTaskEdit] = useState(false)
+    const [taskID, setTaskID] = useState(null)
+
+    const [columnState, setColumnState] = useState(false)
+    const [taskState, setTaskState] = useState(false)
+
     return (
         <div className="rounded-sm bg-[#16181D] flex flex-col mr-6 w-64 ">
-            <div className="flex justify-between items-center w-full px-[4rem] h-[60px] bg-[#242731] rounded-sm rounded-b-none">
-                <div className="text-[17px] font-bold text-subtle-text">
-                    {column.title}
-                </div>
-            </div>
+            {
+                !columnState ?
+                    <div
+                        onMouseOver={() => {
+                            setColumnEdit(true)
+                        }}
+                        onMouseLeave={() => {
+                            setColumnEdit(false)
+                        }}
+                        className="flex justify-between items-center w-full px-6 h-[60px] bg-[#242731] rounded-sm rounded-b-none"
+                    >
+                        <div className="text-[17px] font-bold text-subtle-text">
+                            {column.title}
+                        </div>
+
+                        <AiFillEdit size={18} onClick={() => setColumnState(true)} className={`cursor-pointer transition-all ${columnEdit ? "block" : "hidden"}`} />
+                    </div>
+                    :
+                    <EditColumn setColumnState={setColumnState} columnId={columnId} setLoading={setLoading} taskIds={taskIds} />
+            }
 
             <Droppable droppableId={column.id}>
                 {(droppableProvided, droppableSnapshot) => (
@@ -19,6 +45,7 @@ const Column = ({ column, tasks, columnId, allTasks }) => {
                         {...droppableProvided.droppableProps}
                     >
                         {
+
                             tasks?.map((task, index) => (
                                 <Draggable key={task.id} draggableId={`${task.id}`} index={index}>
                                     {(draggableProvided, draggableSnapshot) => (
@@ -27,8 +54,23 @@ const Column = ({ column, tasks, columnId, allTasks }) => {
                                             ref={draggableProvided.innerRef}
                                             {...draggableProvided.draggableProps}
                                             {...draggableProvided.dragHandleProps}
+                                            onMouseOver={() => {
+                                                setTaskEdit(true)
+                                                setTaskID(task.id)
+                                            }}
+                                            onMouseLeave={() => {
+                                                setTaskEdit(false)
+                                                setTaskID(null)
+                                            }}
                                         >
-                                            <div>{task.content}</div>
+                                            <div className="w-full flex justify-between">
+                                                <div>{task.content}</div>
+                                                <AiFillEdit
+                                                    size={18}
+                                                    className={`cursor-pointer transition-all ${taskEdit && task.id == taskID ? "block" : "hidden"}`}
+                                                    onClick={() => setTaskState(true)}
+                                                />
+                                            </div>
                                             <img
                                                 src={task.img}
                                                 alt={task.img}
@@ -39,6 +81,7 @@ const Column = ({ column, tasks, columnId, allTasks }) => {
                                 </Draggable>
                             ))
                         }
+                        {/* <EditTask setLoading={setLoading} setTaskState={setTaskState} /> */}
                         {droppableProvided.placeholder}
                         <div className="mb-4">
                             <AddTask column={column} columnId={columnId} allTasks={allTasks} />

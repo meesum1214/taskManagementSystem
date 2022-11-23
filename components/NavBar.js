@@ -11,6 +11,7 @@ export default () => {
     const onLogout = () => {
         signOut(auth);
         localStorage.removeItem('peretz-auth-token')
+        localStorage.removeItem('peretz-user-id')
         router.push('/login')
     }
 
@@ -18,7 +19,7 @@ export default () => {
         // Create navbar with tailwinf css according to app styling
         <nav className="flex items-center justify-between flex-wrap bg-gray-800 p-6">
             <div className="flex items-center flex-shrink-0 text-white mr-6">
-                <span className="font-semibold text-xl tracking-tight cursor-pointer" onClick={() => router.push('/')}>Peretz</span>
+                <span className="font-semibold text-xl tracking-tight cursor-pointer" onClick={() => router.push('/')}>Task Management System</span>
             </div>
 
             <div
