@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import AddTask from "./AddTask";
@@ -8,11 +9,12 @@ import EditTask from "./EditTask";
 const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds }) => {
 
     const [columnEdit, setColumnEdit] = useState(false)
-    const [taskEdit, setTaskEdit] = useState(false)
     const [taskID, setTaskID] = useState(null)
 
     const [columnState, setColumnState] = useState(false)
     const [taskState, setTaskState] = useState(false)
+
+    const [percent, setPercent] = useState(0)
 
     return (
         <div className="rounded-sm bg-[#16181D] flex flex-col mr-6 w-64 ">
@@ -47,42 +49,45 @@ const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds }) => {
                         {
 
                             tasks?.map((task, index) => (
-                                <Draggable key={task.id} draggableId={`${task.id}`} index={index}>
-                                    {(draggableProvided, draggableSnapshot) => (
-                                        <div
-                                            className="mb-[1rem] bg-[#242731] rounded-[3px] p-[1.5rem]"
-                                            ref={draggableProvided.innerRef}
-                                            {...draggableProvided.draggableProps}
-                                            {...draggableProvided.dragHandleProps}
-                                            onMouseOver={() => {
-                                                setTaskEdit(true)
-                                                setTaskID(task.id)
-                                            }}
-                                            onMouseLeave={() => {
-                                                setTaskEdit(false)
-                                                setTaskID(null)
-                                            }}
-                                        >
-                                            <div className="w-full flex justify-between">
-                                                <div>{task.content}</div>
-                                                <AiFillEdit
-                                                    size={18}
-                                                    className={`cursor-pointer transition-all ${taskEdit && task.id == taskID ? "block" : "hidden"}`}
-                                                    onClick={() => setTaskState(true)}
+                                <div key={task.id}>
+                                    <Draggable draggableId={`${task.id}`} index={index}>
+                                        {(draggableProvided, draggableSnapshot) => (
+                                            <div
+                                                className={`mb-[1rem] bg-[#242731] rounded-[3px] p-[1.5rem] ${taskState && task.id == taskID ? "hidden" : "block"}`}
+                                                ref={draggableProvided.innerRef}
+                                                {...draggableProvided.draggableProps}
+                                                {...draggableProvided.dragHandleProps}
+                                            >
+                                                <div className="w-full flex justify-between">
+                                                    <div className="w-[95%]">{task.content}</div>
+                                                    <AiFillEdit
+                                                        size={18}
+                                                        className={`cursor-pointer transition-all`}
+                                                        onClick={() => {
+                                                            setTaskID(task.id)
+                                                            task.id == taskID && setTaskState(true)
+                                                        }}
+                                                    />
+                                                </div>
+                                                <img
+                                                    src={task.img}
+                                                    alt={task.img}
+                                                    className="w-[100%] rounded-sm mt-2"
                                                 />
                                             </div>
-                                            <img
-                                                src={task.img}
-                                                alt={task.img}
-                                                className="w-[100%] rounded-sm mt-2"
-                                            />
-                                        </div>
-                                    )}
-                                </Draggable>
+                                        )}
+                                    </Draggable>
+                                    <div className={`${taskState && task.id == taskID ? "block" : "hidden"} mb-[1rem]`}>
+                                        <EditTask setLoading={setLoading} setTaskState={setTaskState} mapTaskId={task.id} taskID={taskID} setPercent={setPercent} />
+                                    </div>
+                                </div>
                             ))
                         }
-                        {/* <EditTask setLoading={setLoading} setTaskState={setTaskState} /> */}
                         {droppableProvided.placeholder}
+
+                        {percent > 0 && <div className="text-white text-sm text-center font-semibold mb-4">Uploading Image : {percent} %</div>}
+                        {percent === 100 && setPercent(0)}
+
                         <div className="mb-4">
                             <AddTask column={column} columnId={columnId} allTasks={allTasks} />
                         </div>

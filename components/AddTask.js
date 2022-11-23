@@ -135,49 +135,6 @@ export default ({ column, columnId, allTasks }) => {
                             })
                         })
                     }
-
-                    // if (column.taskIds == "no tasks") {
-                    //     set(ref(database, `${router.query.slug}/`), {
-                    //         ...boardsData,
-                    //         columns: {
-                    //             ...boardsData.columns,
-                    //             [column]: {
-                    //                 ...boardsData.columns[column],
-                    //                 taskIds: [taskTitle]
-                    //             }
-                    //         },
-                    //         tasks: [
-                    //             ...boardsData.tasks,
-                    //             {
-                    //                 id: tasks.length + 1,
-                    //                 title: taskTitle,
-                    //                 img: url
-                    //             }
-                    //         ]
-
-                    //     })
-                    // }
-                    //  else {
-                    //     set(ref(database, `${router.query.slug}/`), {
-                    //         ...boardsData,
-                    //         columns: {
-                    //             ...boardsData.columns,
-                    //             [column]: {
-                    //                 ...boardsData.columns[column],
-                    //                 taskIds: [...boardsData.columns[column].taskIds, taskTitle]
-                    //             }
-                    //         },
-                    //         tasks: [
-                    //             ...boardsData.tasks,
-                    //             {
-                    //                 id: tasks.length + 1,
-                    //                 title: taskTitle,
-                    //                 img: url
-                    //             }
-                    //         ]
-
-                    //     })
-                    // }
                 })
             },
         );
