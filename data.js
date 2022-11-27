@@ -1,57 +1,27 @@
 let a = {
     "columnOrder": [
         "column-1",
-        "column-2",
-        "column-3"
+        "column-2"
     ],
     "columns": {
         "column-1": {
             "id": "column-1",
-            "taskIds": [2, 5],
+            "taskIds": [],
             "title": "TO-DO"
         },
         "column-2": {
             "id": "column-2",
-            "taskIds": [6, 1],
-            "title": "IN-PROGRESS"
-        },
-        "column-3": {
-            "id": "column-3",
-            "taskIds": [4, 3],
-            "title": "COMPLETED"
+            "taskIds": [
+                2
+            ],
+            "title": "Salman"
         }
     },
-    "tasks": [
-        null,
-        {
-            "content": "Configure Next.js application",
-            "id": 1,
-            "img": "/img1.jpg"
-        },
-        {
-            "content": "Configure Next.js and tailwind ",
+    "tasks": {
+        "2": {
+            "content": "asdasdasd",
             "id": 2,
-            "img": "/img2.jpg"
-        },
-        {
-            "content": "Create sidebar navigation menu",
-            "id": 3,
-            "img": "/img3.jpg"
-        },
-        {
-            "content": "Create page footer",
-            "id": 4,
-            "img": "/img4.jpg"
-        },
-        {
-            "content": "Create page navigation menu",
-            "id": 5,
-            "img": "/img5.jpg"
-        },
-        {
-            "content": "Create page layout",
-            "id": 6,
-            "img": "/img6.jpg"
+            "img": "https://firebasestorage.googleapis.com/v0/b/trello-auth-f3665.appspot.com/o/taskimages%2F4.jpg?alt=media&token=3b317588-334a-40e0-b9bb-c000c94378e8"
         }
-    ]
+    }
 }

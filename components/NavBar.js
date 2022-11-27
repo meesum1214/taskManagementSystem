@@ -1,10 +1,8 @@
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/router"
 import { auth } from "../firebase/initFirebase";
-import { useAuthState } from "react-firebase-hooks/auth";
 
 export default () => {
-    const [user, loading, error] = useAuthState(auth);
 
     const router = useRouter()
 
@@ -20,6 +18,7 @@ export default () => {
         <nav className="flex items-center justify-between flex-wrap bg-gray-800 p-6">
             <div className="flex items-center flex-shrink-0 text-white mr-6">
                 <span className="font-semibold text-xl tracking-tight cursor-pointer" onClick={() => router.push('/')}>Task Management System</span>
+                <span className="text-gray-600 text-sm font-semibold ml-2">(Admin)</span>
             </div>
 
             <div

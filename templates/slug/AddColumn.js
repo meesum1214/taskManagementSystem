@@ -1,10 +1,10 @@
 import { TextInput } from "@mantine/core";
 import { ref, set } from "firebase/database";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BsPlusLg } from "react-icons/bs";
 import { RiCloseLine } from "react-icons/ri";
-import { database } from "../firebase/initFirebase";
+import { database } from "../../firebase/initFirebase";
 
 export default ({ boardsData }) => {
 
@@ -13,20 +13,20 @@ export default ({ boardsData }) => {
     const [listTitle, setListTitle] = useState('')
     
 
-    // let KeysLength = Object.keys(boardsData.columns).length
-    const [keysLength, setKeysLength] = useState()
-    useEffect(() => {
-        if (boardsData.columns) {
-            setKeysLength(`column-${Object.keys(boardsData.columns).length + 1}`)
-        }
-    }, [boardsData.columns])
+    // const [keysLength, setKeysLength] = useState()
+    // useEffect(() => {
+    //     if (boardsData.columns) {
+    //         setKeysLength(`column-${Object.keys(boardsData.columns).length + 1}`)
+    //     }
+    // }, [boardsData.columns])
 
 
     const handleAddCard = () => {
         // console.log('listTitle: ', listTitle)
         if (!listTitle) { return }
 
-        let colName = `column-${Object.keys(boardsData.columns).length + 1}`
+        // let colName = `column-${Object.keys(boardsData.columns).length + 1}`
+        let colName = `column-${Math.floor(Math.random()*90000) + 10000}`
 
         var test = ["no tasks"]
 
@@ -35,16 +35,6 @@ export default ({ boardsData }) => {
             title: listTitle,
             taskIds: test,
         };
-
-        // const newState = {
-        //     ...boardsData,
-        //     columns: {
-        //         ...boardsData.columns,
-        //         [newCol.id]: newCol,
-        //     },
-        //     columnOrder: [...boardsData.columnOrder, newCol.id],
-        // };
-
 
         set(ref(database, `${router.query.slug}/`), {
             ...boardsData,

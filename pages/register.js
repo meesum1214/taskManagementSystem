@@ -1,12 +1,26 @@
 import Link from "next/link"
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase/initFirebase";
-import { useState } from "react";
+import { auth, database } from "../firebase/initFirebase";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { ref, set } from "firebase/database";
+import { getAdmins, getUsers } from "../firebase/FirebaseFunctions";
 
 export default () => {
+
+    const [allUsers, setAllUsers] = useState([])
+    const [allAdmins, setAllAdmins] = useState([]);
+
+    useEffect(() => {
+        getUsers(setAllUsers)
+        getAdmins(setAllAdmins)
+    }, [])
+
+
     const router = useRouter()
     const [Loading, setLoading] = useState(false);
+    const [fName, setFName] = useState('')
+    const [lName, setLName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
@@ -24,8 +38,66 @@ export default () => {
                 const user = userCredential.user;
                 localStorage.setItem('peretz-auth-token', user.accessToken)
                 localStorage.setItem('peretz-user-id', user.uid)
-                router.push('/')
-                setLoading(false)
+                // console.log(user)
+                if (!allUsers) {
+                    set(ref(database, 'allUsers/'), [
+                        {
+                            [user.uid]: {
+                                fName: fName,
+                                lName: lName,
+                                email: email,
+                                password: password,
+                                id: user.uid,
+                                role: 'admin'
+                            }
+                        }
+                    ]).then(() => {
+                        set(ref(database, 'roles/admins'), [{
+                            id: user.uid,
+                            name: fName + ' ' + lName
+                        }])
+                        router.push('/')
+                        setLoading(false)
+                    }).catch((error) => {
+                        alert(error)
+                        setLoading(false)
+                    })
+                }
+                else {
+                    set(ref(database, 'allUsers/'), [
+                        ...allUsers,
+                        {
+                            [user.uid]: {
+                                fName: fName,
+                                lName: lName,
+                                email: email,
+                                password: password,
+                                id: user.uid,
+                                role: 'admin'
+                            }
+                        }
+                    ]).then(() => {
+                        if (!allAdmins) {
+                            set(ref(database, 'roles/admins'), [{
+                                id: user.uid,
+                                name: fName + ' ' + lName
+                            }])
+                        } else {
+                            set(ref(database, 'roles/admins'), [
+                                ...allAdmins,
+                                {
+                                    id: user.uid,
+                                    name: fName + ' ' + lName
+                                }
+                            ])
+                        }
+                        router.push('/')
+                        setLoading(false)
+                    }).catch((error) => {
+                        alert(error)
+                        setLoading(false)
+                    })
+                }
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -51,6 +123,38 @@ export default () => {
                         </div>
                     </div>
                     <div className="bg-[#16181D] shadow-md rounded-sm px-12 pt-6 pb-8 mb-4">
+                        <div className="mb-4 flex justify-between items-center">
+                            <div className="mr-2">
+                                <label className="block text-white text-sm font-bold mb-2" htmlFor="username">
+                                    First Name
+                                </label>
+
+                                <input
+                                    className="shadow appearance-none rounded-sm w-full py-2 px-3 text-gray-300 leading-tight focus:outline-none focus:shadow-outline bg-[#242731] border border-gray-500"
+                                    id="fname"
+                                    type="text"
+                                    placeholder="Enter First Name"
+                                    value={fName}
+                                    onChange={(e) => setFName(e.target.value)}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-white text-sm font-bold mb-2" htmlFor="username">
+                                    Last Name
+                                </label>
+
+                                <input
+                                    className="shadow appearance-none rounded-sm w-full py-2 px-3 text-gray-300 leading-tight focus:outline-none focus:shadow-outline bg-[#242731] border border-gray-500"
+                                    id="lname"
+                                    type="text"
+                                    placeholder="Enter Last Name"
+                                    value={lName}
+                                    onChange={(e) => setLName(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
                         <div className="mb-4">
                             <label className="block text-white text-sm font-bold mb-2" htmlFor="username">
                                 Email

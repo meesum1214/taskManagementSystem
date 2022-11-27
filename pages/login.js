@@ -1,10 +1,8 @@
 import Link from "next/link"
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, database } from "../firebase/initFirebase";
-import { useEffect, useState } from "react";
+import { auth } from "../firebase/initFirebase";
+import { useState } from "react";
 import { useRouter } from "next/router";
-import { ref, set } from "firebase/database";
-import { getUserRecord } from "../firebase/FirebaseFunctions";
 
 
 export default () => {
@@ -12,13 +10,6 @@ export default () => {
     const [Loading, setLoading] = useState(false);
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [userRecord, setUserRecord] = useState(null)
-
-    // useEffect(() => {
-    //     setUserRecord(getUserRecord())
-    //     console.log('userRecord: ', userRecord)
-    // }, [])
-    
 
     const onLogin = () => {
         setLoading(true)
@@ -31,22 +22,9 @@ export default () => {
 
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                // Signed in 
                 const user = userCredential.user;
                 localStorage.setItem('peretz-auth-token', user.accessToken)
                 localStorage.setItem('peretz-user-id', user.uid)
-                // console.log(userCredential.user.uid)
-
-          
-
-                // if(!userRecord.userCredential.user.uid){
-                //     const userRef = ref(database, `accessUser/${userCredential.user.uid}`);
-
-                //     set(userRef, [
-                //         { boardName: 'sample board' }
-                //     ])
-                // }
-
                 router.push('/')
                 setLoading(false)
                 // ...
@@ -105,7 +83,6 @@ export default () => {
                                     if (e.key === 'Enter') { onLogin() }
                                 }}
                             />
-                            {/* <p className="text-red-500 text-xs italic">Please choose a password.</p> */}
                         </div>
                         <div className="flex items-center justify-between">
                             <button

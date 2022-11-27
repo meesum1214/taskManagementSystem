@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
-import AddColumn from "../components/AddColumn";
+import AddColumn from "../templates/slug/AddColumn";
 import NavBar from "../components/NavBar";
 import { getBoardsData } from "../firebase/FirebaseFunctions";
 import { database } from "../firebase/initFirebase";
 
-const Column = dynamic(() => import("../components/Column"), { ssr: false });
+const Column = dynamic(() => import("../templates/slug/Column"), { ssr: false });
 
 const reorderColumnList = (sourceCol, startIndex, endIndex) => {
     const newTaskIds = Array.from(sourceCol.taskIds);
@@ -134,10 +134,9 @@ export default () => {
                         <ScrollArea className="w-full pb-6">
                             <div className="w-full flex">
                                 {
-                                    boardsData ?
-                                        boardsData.columnOrder?.map((columnId) => {
+                                    // boardsData ?
+                                        boardsData?.columnOrder?.map((columnId) => {
                                             const column = boardsData.columns[columnId];
-                                            // const tasks = column.taskIds.includes("no tasks") ? null : column?.taskIds?.map((taskId) => boardsData.tasks[taskId]);
 
                                             if (!column.taskIds) {
                                                 set(ref(database, `${router.query.slug}/columns/${columnId}/taskIds`), ["no tasks"])
@@ -146,10 +145,11 @@ export default () => {
                                             const taskIds = column?.taskIds;
 
                                             const tasks = column?.taskIds?.map((taskId) => boardsData.tasks[taskId]);
-                                            return <Column key={column.id} column={column} tasks={tasks} columnId={columnId} allTasks={boardsData.tasks} setLoading={setLoading} taskIds={taskIds} />;
+
+                                            return <Column key={column.id} column={column} tasks={tasks} columnId={columnId} allTasks={boardsData.tasks} setLoading={setLoading} taskIds={taskIds} slug={router.query.slug} columnOrder={boardsData.columnOrder} />;
                                         })
-                                        :
-                                        <AddColumn boardsData={boardsData} />
+                                        // :
+                                        // <AddColumn boardsData={boardsData} />
                                 }
                                 <AddColumn boardsData={boardsData} />
                             </div>

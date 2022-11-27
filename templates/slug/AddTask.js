@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { BsPlusLg } from "react-icons/bs";
 import { RiCloseLine } from "react-icons/ri";
-import { database, storage } from "../firebase/initFirebase";
+import { database, storage } from "../../firebase/initFirebase";
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { ref, set } from "firebase/database";
 import { ref as ref_storage, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -87,50 +87,68 @@ export default ({ column, columnId, allTasks }) => {
             () => {
                 // Upload completed successfully, now we can get the download URL
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    console.log('File available at', downloadURL);
+                    // console.log('File available at', downloadURL);
                     setUrl(downloadURL)
                     return downloadURL
                 }).then((url) => {
-                    console.log(allTasks)
+                    // console.log(allTasks)
                     if (column.taskIds.length === 0) {
-                        let b = allTasks[allTasks.length - 1].id + 1
-                        let t = { ...allTasks };
-                        // t.unshift(null);
+                        // let b = allTasks[allTasks.length - 1].id + 1
+                        // let t = { ...allTasks };
 
 
-                        t[b] = {
-                            id: allTasks[allTasks.length - 1].id + 1,
+                        // t[b] = {
+                        //     id: allTasks[allTasks.length - 1].id + 1,
+                        //     content: taskTitle,
+                        //     img: url
+                        // }
+
+                        let tempTask = {
+                            id: Math.floor(Math.random() * 90000) + 10000,
                             content: taskTitle,
                             img: url
                         }
-                        set(ref(database, router.query.slug + '/tasks/'), t).then(() => {
-                            set(ref(database, `${router.query.slug}/columns/${columnId}`), {
-                                ...column,
-                                taskIds: [
-
-                                    allTasks[allTasks.length - 1].id + 1
-                                ]
-                            })
+                        set(ref(database, router.query.slug + '/tasks/'), {
+                            ...allTasks,
+                            [tempTask.id]: tempTask
                         })
+                            .then(() => {
+                                set(ref(database, `${router.query.slug}/columns/${columnId}`), {
+                                    ...column,
+                                    taskIds: [
+                                        tempTask.id,
+                                    ]
+                                })
+                            })
                     }
 
                     else {
-                        let b = allTasks[allTasks.length - 1].id + 1
-                        let t = { ...allTasks };
-                        // t.unshift(null);
+                        // let b = allTasks[allTasks.length - 1].id + 1
+                        // let t = { ...allTasks };
 
 
-                        t[b] = {
-                            id: allTasks[allTasks.length - 1].id + 1,
+                        // t[b] = {
+                        //     id: allTasks[allTasks.length - 1].id + 1,
+                        //     content: taskTitle,
+                        //     img: url
+                        // }
+
+                        let tempTask = {
+                            id: Math.floor(Math.random() * 90000) + 10000,
                             content: taskTitle,
                             img: url
                         }
-                        set(ref(database, router.query.slug + '/tasks/'), t).then(() => {
+
+
+                        set(ref(database, router.query.slug + '/tasks/'), {
+                            ...allTasks,
+                            [tempTask.id]: tempTask
+                        }).then(() => {
                             set(ref(database, `${router.query.slug}/columns/${columnId}`), {
                                 ...column,
                                 taskIds: [
                                     ...column.taskIds,
-                                    allTasks[allTasks.length - 1].id + 1
+                                    tempTask.id
                                 ]
                             })
                         })
@@ -143,46 +161,6 @@ export default ({ column, columnId, allTasks }) => {
         setTaskTitle('')
         setFile([])
         setUrl(null)
-
-
-        // if (column.taskIds == "no tasks") {
-        //     set(ref(database, `${router.query.slug}/`), {
-        //         ...boardsData,
-        //         columns: {
-        //             ...boardsData.columns,
-        //             [column]: {
-        //                 ...boardsData.columns[column],
-        //                 taskIds: [taskTitle]
-        //             }
-        //         },
-        //         tasks: [
-        //             ...boardsData.tasks,
-        //             {
-        //                 id: tasks.length + 1,
-        //                 title: taskTitle,
-        //                 img: taskImg
-        //             }
-        //         ]
-
-        //     })
-        // }
-
-        // set(ref(database, `${router.query.slug}/`), {
-        //     ...boardsData,
-        //     columns: {
-        //         ...boardsData.columns,
-        //         [column]: {
-        //             ...boardsData.columns[column],
-        //             taskIds: [...boardsData.columns[column].taskIds, taskTitle]
-        //         }
-        //     },
-        //     columnOrder: [
-        //         ...boardsData.columnOrder,
-        //         newCol.id,
-        //     ]
-        // })
-
-
     }
 
     return (

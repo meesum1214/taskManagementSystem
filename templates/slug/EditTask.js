@@ -5,7 +5,7 @@ import { ref as ref_storage, uploadBytesResumable, getDownloadURL } from "fireba
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { RiCloseLine } from "react-icons/ri";
-import { database, storage } from "../firebase/initFirebase";
+import { database, storage } from "../../firebase/initFirebase";
 
 export default ({ setLoading, setTaskState, taskID, setPercent }) => {
 

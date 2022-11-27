@@ -2,11 +2,16 @@
 import React, { useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import AddTask from "./AddTask";
-import { AiFillEdit } from "react-icons/ai";
+import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import EditColumn from "./EditColumn";
 import EditTask from "./EditTask";
+import { ref, remove, set } from "firebase/database";
+import { database } from "../../firebase/initFirebase";
+import { deleteColumn } from "../../firebase/FirebaseFunctions";
 
-const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds }) => {
+const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds, slug, columnOrder }) => {
+
+
 
     const [columnEdit, setColumnEdit] = useState(false)
     const [taskID, setTaskID] = useState(null)
@@ -14,7 +19,47 @@ const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds }) => {
     const [columnState, setColumnState] = useState(false)
     const [taskState, setTaskState] = useState(false)
 
+    const [taskDelete, setTaskDelete] = useState(false)
+    const [taskIdHover, setTaskIdHover] = useState(null)
+    const [columnIdHover, setColumnIdHover] = useState(null)
+
+    const [taskIDs, setTaskIDs] = useState(null)
+
     const [percent, setPercent] = useState(0)
+
+
+
+
+    const handleTaskDelete = (id) => {
+
+        if (allTasks.length === 2 || Object.keys(allTasks).length === 1) {
+            alert('You can not delete the last task but you cange it!')
+        } else {
+            set(ref(database, slug + `/columns/${columnId}/taskIds`), taskIds.filter((task) => task !== id))
+                .then(() => {
+                    remove(ref(database, slug + '/tasks/' + id))
+                        .then(() => {
+                            console.log('Task deleted');
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            alert(error)
+                        })
+                })
+        }
+    }
+
+    const handleOnColumnDelete = (id) => {
+        if (column.taskIds.length !== 0) {
+            alert('Please delete all tasks in this column before deleting it')
+        } else {
+
+            let tempColumnOrder = columnOrder.filter((column) => column !== id)
+            // console.log('tempColumnOrder: ', tempColumnOrder)
+
+            deleteColumn(slug, id, tempColumnOrder)
+        }
+    }
 
     return (
         <div className="rounded-sm bg-[#16181D] flex flex-col mr-6 w-64 ">
@@ -23,6 +68,7 @@ const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds }) => {
                     <div
                         onMouseOver={() => {
                             setColumnEdit(true)
+                            setColumnIdHover(columnId)
                         }}
                         onMouseLeave={() => {
                             setColumnEdit(false)
@@ -33,7 +79,15 @@ const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds }) => {
                             {column.title}
                         </div>
 
-                        <AiFillEdit size={18} onClick={() => setColumnState(true)} className={`cursor-pointer transition-all ${columnEdit ? "block" : "hidden"}`} />
+                        <div className="flex items-center">
+                            <AiFillDelete
+                                size={18}
+                                className={`${columnEdit ? "block" : "hidden"} cursor-pointer transition-all text-white mr-1`}
+                                onClick={() => handleOnColumnDelete(columnIdHover)}
+                            />
+
+                            <AiFillEdit size={18} onClick={() => setColumnState(true)} className={`cursor-pointer transition-all ${columnEdit ? "block" : "hidden"}`} />
+                        </div>
                     </div>
                     :
                     <EditColumn setColumnState={setColumnState} columnId={columnId} setLoading={setLoading} taskIds={taskIds} />
@@ -47,7 +101,6 @@ const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds }) => {
                         {...droppableProvided.droppableProps}
                     >
                         {
-
                             tasks?.map((task, index) => (
                                 <div key={task.id}>
                                     <Draggable draggableId={`${task.id}`} index={index}>
@@ -57,17 +110,32 @@ const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds }) => {
                                                 ref={draggableProvided.innerRef}
                                                 {...draggableProvided.draggableProps}
                                                 {...draggableProvided.dragHandleProps}
+                                                onMouseOver={() => {
+                                                    setTaskDelete(true)
+                                                    setTaskIdHover(task.id)
+                                                }}
+                                                onMouseLeave={() => {
+                                                    setTaskDelete(false)
+                                                    setTaskIdHover(null)
+                                                }}
                                             >
                                                 <div className="w-full flex justify-between">
                                                     <div className="w-[95%]">{task.content}</div>
-                                                    <AiFillEdit
-                                                        size={18}
-                                                        className={`cursor-pointer transition-all`}
-                                                        onClick={() => {
-                                                            setTaskID(task.id)
-                                                            task.id == taskID && setTaskState(true)
-                                                        }}
-                                                    />
+                                                    <div className="flex">
+                                                        <AiFillDelete
+                                                            size={16}
+                                                            className={`${taskDelete && task.id == taskIdHover ? "block" : "hidden"} cursor-pointer transition-all text-white mr-1`}
+                                                            onClick={() => handleTaskDelete(task.id, task.content, task.img)}
+                                                        />
+                                                        <AiFillEdit
+                                                            size={16}
+                                                            className={`cursor-pointer transition-all`}
+                                                            onClick={() => {
+                                                                setTaskID(task.id)
+                                                                task.id == taskID && setTaskState(true)
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </div>
                                                 <img
                                                     src={task.img}
@@ -94,7 +162,6 @@ const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds }) => {
                     </div>
                 )}
             </Droppable>
-
         </div>
     );
 };

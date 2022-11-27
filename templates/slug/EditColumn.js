@@ -3,7 +3,7 @@ import { ref, set } from "firebase/database";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { RiCloseLine } from "react-icons/ri";
-import { database } from "../firebase/initFirebase";
+import { database } from "../../firebase/initFirebase";
 
 export default ({ setColumnState, columnId, setLoading, taskIds }) => {
     const router = useRouter();

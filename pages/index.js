@@ -1,114 +1,41 @@
 import { TextInput } from "@mantine/core"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { database } from "../firebase/initFirebase";
-import { ref, set } from "firebase/database";
-import { getBoards } from "../firebase/FirebaseFunctions"
+import { addNewBoard, deleteBoard, getBoards, getWorkers } from "../firebase/FirebaseFunctions"
 import { useRouter } from "next/router";
 import NavBar from "../components/NavBar";
+import { AiFillDelete } from "react-icons/ai";
+import AssignWorker from "../templates/Home/AssignWorker";
 
 export default () => {
+  const [workers, setWorkers] = useState([])
 
   const [boardTitle, setBoardTitle] = useState('')
   const [boards, setBoards] = useState([])
   const [Loading, setLoading] = useState(true);
 
+  const [boardState, setBoardState] = useState(false)
+  const [boardName, setBoardName] = useState(null)
+
   const router = useRouter()
 
   useEffect(() => {
-
-
     if (!localStorage.getItem('peretz-auth-token')) {
       router.push('/login')
     }
-
     getBoards({ setBoards, setLoading })
-    // setTimeout(() => {
-    //   setLoading(false)
-    // }, 700);
-
-
-
-
-    // set(ref(database, 'project task board4/'),
-    //   {
-    //     tasks: {
-    //       1: { id: 1, content: "Configure Next.js application", img: "/img1.jpg" },
-    //       2: { id: 2, content: "Configure Next.js and tailwind ", img: "/img2.jpg" },
-    //       3: { id: 3, content: "Create sidebar navigation menu", img: "/img3.jpg" },
-    //       4: { id: 4, content: "Create page footer", img: "/img4.jpg" },
-    //       5: { id: 5, content: "Create page navigation menu", img: "/img5.jpg" },
-    //       6: { id: 6, content: "Create page layout", img: "/img6.jpg" },
-    //     },
-    //     columns: {
-    //       "column-1": {
-    //         id: "column-1",
-    //         title: "TO-DO",
-    //         taskIds: [1, 2, 3, 4, 5, 6],
-    //       },
-    //       "column-2": {
-    //         id: "column-2",
-    //         title: "IN-PROGRESS",
-    //         taskIds: ["no tasks"],
-    //       },
-    //       "column-3": {
-    //         id: "column-3",
-    //         title: "COMPLETED",
-    //         taskIds: ["no tasks"],
-    //       },
-    //     },
-    //     // Facilitate reordering of the columns
-    //     columnOrder: ["column-1", "column-2", "column-3"],
-    //   }
-    // )
-
-
-    // set(ref(database, 'accessUser/dsafjsdfsdfsdfh/'), [
-    //   { boardName: 'project task board4' },
-    // ])
-
-    // set(ref(database, 'project task board5/'), {
-    //   tasks: {
-    //     1: { id: 1, content: "Configure Next.js application", img: "/img1.jpg" },
-    //   },
-    //   columns: {
-    //     "column-1": {
-    //       id: "column-1",
-    //       title: "TO-DO",
-    //       taskIds: [1],
-    //     },
-    //   },
-    //   columnOrder: ["column-1"],
-    // });
+    getWorkers(setWorkers)
   }, [])
 
   const onPressEnter = () => {
-    set(ref(database, `${boardTitle}/`), {
-      tasks: {
-        1: { id: 1, content: "Sample Task", img: "/img1.jpg" },
-      },
-      columns: {
-        "column-1": {
-          id: "column-1",
-          title: "TO-DO",
-          taskIds: [1],
-        },
-      },
-      columnOrder: ["column-1"],
-    });
+    addNewBoard(boardTitle, setBoardTitle, boards)
+    // console.log(boards)
+  }
 
-    if (boards) {
-      set(ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`), [
-        ...boards, { boardName: boardTitle }
-      ])
-    }
-    else {
-      set(ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`), [
-        { boardName: boardTitle }
-      ])
-    }
-
-    setBoardTitle('')
+  const handleDeleteBoard = () => {
+    let newBoards = boards.filter((board) => board.boardName !== boardName)
+    console.log('newBoards: ', newBoards)
+    deleteBoard(boardName, newBoards)
   }
 
   return (
@@ -124,7 +51,7 @@ export default () => {
 
           <TextInput
             placeholder="Your Board Title..."
-            className="w-96"
+            className="w-52"
             value={boardTitle}
             onChange={(e) => setBoardTitle(e.currentTarget.value)}
             onKeyDown={(e) => {
@@ -133,21 +60,60 @@ export default () => {
           />
         </div>
 
-
         <div className="w-[90%] flex flex-wrap">
           {
             boards ?
               boards.map((board, i) => (
-                <Link key={i} href={`/${board.boardName}`}>
-                  <div
-                    className="cursor-pointer w-52 h-32 m-2 bg-[#161B22] shadow-md flex justify-center items-center font-semibold text-white rounded-md border border-gray-400">{board.boardName}
-                  </div>
-                </Link>
+                <div
+                  key={i}
+                  className="relative cursor-pointer w-32 h-32 m-2 bg-[#161B22] shadow-md font-semibold text-white rounded-md border border-gray-400"
+                  onMouseOver={() => {
+                    setBoardState(true)
+                    setBoardName(board.boardName)
+                  }}
+                  onMouseLeave={() => {
+                    setBoardState(false)
+                  }}
+                >
+                  <Link href={`/${board.boardName}`}>
+                    <div className="absolute z-0 w-full h-full flex justify-center items-center">
+                      {board.boardName}
+                    </div>
+                  </Link>
+
+                  <AiFillDelete
+                    size={16}
+                    className={`${boardState && board.boardName === boardName ? 'block' : 'hidden'} cursor-pointer transition-all text-white absolute top-2 right-2 z-10`}
+                    onClick={handleDeleteBoard}
+                  />
+                </div>
               ))
               :
               <div className="text-lg text-gray-300 font-bold mt-6">No Boards...</div>
           }
         </div>
+
+        <div className="w-[90%] mb-8">
+          <AssignWorker boards={boards} />
+        </div>
+
+        {/* <div className="w-[90%] mb-8 border border-gray-400">
+          <div className="flex items-center w-full p-3 border border-gray-400">
+            <div className="text-gray-300 font-bold p-3 w-[10%]">Worker Name</div>
+            <div className="text-gray-300 font-bold p-3 w-[90%]">Alloted Boards</div>
+          </div>
+          {
+            workers ?
+              workers.map((worker, i) => (
+                <div key={i} className="flex items-center w-full p-3">
+                  <div className="text-gray-300 font-bold p-3 w-[10%]">{worker.name}</div>
+                  <div className="text-gray-300 font-bold p-3 w-[90%]">{worker.id}</div>
+                </div>
+              ))
+              :
+              <div className="text-lg text-gray-300 font-bold mt-6">No Workers...</div>
+          }
+        </div> */}
 
       </div>
     </div>
