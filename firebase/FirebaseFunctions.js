@@ -183,3 +183,19 @@ export const getAssignedBoards = (selectedWorker, setAssignedBoards) => {
         alert(err)
     }
 }
+
+export const getWorkerBoards = ( workerId, setWorkerBoards ) => {
+    const dbRef = ref(database, `accessUser/${workerId}/`);
+
+    try {
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            // console.log('Assigned Worker Boards >>>>>>>>>>', data)
+            setWorkerBoards(data)
+        });
+    }
+    catch (err) {
+        console.log(err)
+        alert(err)
+    }
+}

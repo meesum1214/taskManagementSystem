@@ -1,11 +1,13 @@
 import { TextInput } from "@mantine/core"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { addNewBoard, deleteBoard, getBoards, getWorkers } from "../firebase/FirebaseFunctions"
+import { addNewBoard, deleteBoard, getBoards, getWorkerBoards, getWorkers } from "../firebase/FirebaseFunctions"
 import { useRouter } from "next/router";
 import NavBar from "../components/NavBar";
 import { AiFillDelete } from "react-icons/ai";
 import AssignWorker from "../templates/Home/AssignWorker";
+import WorkerBoards from "../templates/Home/WorkerBoards";
+
 
 export default () => {
   const [workers, setWorkers] = useState([])
@@ -18,6 +20,7 @@ export default () => {
   const [boardName, setBoardName] = useState(null)
 
   const router = useRouter()
+
 
   useEffect(() => {
     if (!localStorage.getItem('peretz-auth-token')) {
@@ -49,15 +52,24 @@ export default () => {
         <div className="w-[90%] mt-10 mb-4">
           <div className="text-5xl text-gray-200 font-bold mb-4">Create your board</div>
 
-          <TextInput
-            placeholder="Your Board Title..."
-            className="w-52"
-            value={boardTitle}
-            onChange={(e) => setBoardTitle(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && boardTitle !== '') { onPressEnter() }
-            }}
-          />
+          <div className="flex justify-between  w-64">
+            <TextInput
+              placeholder="Your Board Title..."
+              className="w-44"
+              value={boardTitle}
+              onChange={(e) => setBoardTitle(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && boardTitle !== '') { onPressEnter() }
+              }}
+            />
+
+            <button
+              className="text-white text-lg px-4 py-1 rounded-sm bg-[#238636] hover:bg-[#2daa46] active:bg-[#238636]"
+              onClick={() => {
+                if (boardTitle !== '') { onPressEnter() }
+              }}
+            >Add</button>
+          </div>
         </div>
 
         <div className="w-[90%] flex flex-wrap">
@@ -97,23 +109,20 @@ export default () => {
           <AssignWorker boards={boards} />
         </div>
 
-        {/* <div className="w-[90%] mb-8 border border-gray-400">
-          <div className="flex items-center w-full p-3 border border-gray-400">
-            <div className="text-gray-300 font-bold p-3 w-[10%]">Worker Name</div>
-            <div className="text-gray-300 font-bold p-3 w-[90%]">Alloted Boards</div>
+        <div className="w-[90%] mb-8 border border-gray-400">
+          <div className="flex items-center w-full p-3 border border-gray-400 text-lg bg-[#238636]">
+            <div className="text-gray-300 font-bold px-3 w-52">Worker Name</div>
+            <div className="text-gray-300 font-bold px-3">Alloted Boards</div>
           </div>
           {
             workers ?
               workers.map((worker, i) => (
-                <div key={i} className="flex items-center w-full p-3">
-                  <div className="text-gray-300 font-bold p-3 w-[10%]">{worker.name}</div>
-                  <div className="text-gray-300 font-bold p-3 w-[90%]">{worker.id}</div>
-                </div>
+                <WorkerBoards key={i} worker={worker} />
               ))
               :
               <div className="text-lg text-gray-300 font-bold mt-6">No Workers...</div>
           }
-        </div> */}
+        </div>
 
       </div>
     </div>
