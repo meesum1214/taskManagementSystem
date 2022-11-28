@@ -8,6 +8,7 @@ export const getBoards = ({ setBoards, setLoading }) => {
     try {
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
+            // console.log(data)
             setBoards(data)
             setLoading(false)
         });

@@ -53,9 +53,12 @@ export default ({ boards }) => {
                     <Select
                         placeholder="Select Worker"
                         data={
-                            workers.map((worker) => {
-                                return { label: worker.name, value: worker.id }
-                            })
+                            workers ?
+                                workers.map((worker) => {
+                                    return { label: worker.name, value: worker.id }
+                                })
+                                :
+                                [{ label: 'No Workers', value: 'No Workers' }]
                         }
                         searchable
                         clearable
@@ -82,9 +85,12 @@ export default ({ boards }) => {
                     <Select
                         placeholder="Select Board"
                         data={
-                            boards.map((board) => {
-                                return { label: board.boardName, value: board.boardName }
-                            })
+                            boards ?
+                                boards.map((board) => {
+                                    return { label: board.boardName, value: board.boardName }
+                                })
+                                :
+                                [{ label: 'No Boards', value: 'No Boards' }]
                         }
                         searchable
                         clearable
