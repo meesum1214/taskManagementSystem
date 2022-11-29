@@ -42,14 +42,12 @@ export default () => {
                 if (!allUsers) {
                     set(ref(database, 'allUsers/'), [
                         {
-                            [user.uid]: {
-                                fName: fName,
-                                lName: lName,
-                                email: email,
-                                password: password,
-                                id: user.uid,
-                                role: 'admin'
-                            }
+                            fName: fName,
+                            lName: lName,
+                            email: email,
+                            password: password,
+                            id: user.uid,
+                            role: 'admin'
                         }
                     ]).then(() => {
                         set(ref(database, 'roles/admins'), [{
@@ -67,14 +65,12 @@ export default () => {
                     set(ref(database, 'allUsers/'), [
                         ...allUsers,
                         {
-                            [user.uid]: {
-                                fName: fName,
-                                lName: lName,
-                                email: email,
-                                password: password,
-                                id: user.uid,
-                                role: 'admin'
-                            }
+                            fName: fName,
+                            lName: lName,
+                            email: email,
+                            password: password,
+                            id: user.uid,
+                            role: 'admin'
                         }
                     ]).then(() => {
                         if (!allAdmins) {

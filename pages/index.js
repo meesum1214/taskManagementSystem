@@ -1,12 +1,14 @@
 import { TextInput } from "@mantine/core"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { addNewBoard, deleteBoard, getBoards, getWorkerBoards, getWorkers } from "../firebase/FirebaseFunctions"
+import { addNewBoard, deleteBoard, getAllUsers, getBoards, getWorkerBoards, getWorkers } from "../firebase/FirebaseFunctions"
 import { useRouter } from "next/router";
 import NavBar from "../components/NavBar";
 import { AiFillDelete } from "react-icons/ai";
 import AssignWorker from "../templates/Home/AssignWorker";
 import WorkerBoards from "../templates/Home/WorkerBoards";
+import { ref, set } from "firebase/database";
+import { database } from "../firebase/initFirebase";
 
 
 export default () => {
@@ -21,8 +23,20 @@ export default () => {
 
   const router = useRouter()
 
+  // const [admin, setAdmin] = useState(true)
+
 
   useEffect(() => {
+    // set(ref(database, '/'), null)
+
+    // getAllUsers(localStorage.getItem('peretz-user-id'), setAdmin)
+
+    // if (admin) {
+    //   localStorage.removeItem('peretz-worker-auth-token')
+    //   localStorage.removeItem('peretz-worker-user-id')
+    //   router.push('/login')
+    // }
+
     if (!localStorage.getItem('peretz-auth-token')) {
       router.push('/login')
     }
@@ -31,7 +45,13 @@ export default () => {
   }, [])
 
   const onPressEnter = () => {
-    addNewBoard(boardTitle, setBoardTitle, boards)
+
+    let temp = boards?.map((item, i) => {
+      return item.boardName
+    }).includes(boardTitle)
+
+    temp ? alert('Board already exists') : addNewBoard(boardTitle, setBoardTitle, boards)
+
     // console.log(boards)
   }
 
@@ -88,7 +108,7 @@ export default () => {
                   }}
                 >
                   <Link href={`/${board.boardName}`}>
-                    <div className="absolute z-0 w-full h-full flex justify-center items-center">
+                    <div className="absolute z-0 w-full h-full flex justify-center items-center text-center">
                       {board.boardName}
                     </div>
                   </Link>

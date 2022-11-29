@@ -24,7 +24,11 @@ export default ({ boards }) => {
 
         getAssignedBoards(selectedWorker, setAssignedBoards)
 
-        if (assignedBoards) {
+        let temp = assignedBoards.map((item, i) => {
+            return item.boardName
+        }).includes(selectedTaskName)
+
+        if (!temp) {
             set(ref(database, `accessUser/${selectedWorker}/`), [
                 ...assignedBoards,
                 { boardName: selectedTaskName }
@@ -32,13 +36,14 @@ export default ({ boards }) => {
                 setSelectedWorker(null)
                 setSelectedTaskName(null)
                 console.log('Board deleted from accessUser');
-                alert('Task assigned!')
             }).catch((error) => {
                 setSelectedWorker(null)
                 setSelectedTaskName(null)
                 console.log(error);
                 alert(error)
             })
+        } else {
+            alert('Worker already assigned to this task')
         }
 
     }
