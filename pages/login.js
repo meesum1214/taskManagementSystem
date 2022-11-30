@@ -26,7 +26,7 @@ export default () => {
                 localStorage.setItem('peretz-auth-token', user.accessToken)
                 localStorage.setItem('peretz-user-id', user.uid)
                 router.push('/')
-                setLoading(false)
+                // setLoading(false)
                 // ...
             })
             .catch((error) => {

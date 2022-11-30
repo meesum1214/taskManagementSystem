@@ -28,6 +28,7 @@ export default () => {
 
   useEffect(() => {
     // set(ref(database, '/'), null)
+    setLoading(false)
 
     getAllUsers(localStorage.getItem('peretz-user-id'), router)
 
@@ -40,18 +41,22 @@ export default () => {
 
   const onPressEnter = () => {
 
-    let temp = boards?.map((item, i) => {
-      return item.boardName
-    }).includes(boardTitle)
+    if (boardTitle && boardPrice) {
+      let temp = boards?.map((item, i) => {
+        return item.boardName
+      }).includes(boardTitle)
 
-    temp ? alert('Board already exists') : addNewBoard(boardTitle, setBoardTitle, boards)
+      temp ? alert('Board already exists') : addNewBoard(boardTitle, setBoardTitle, boards, boardPrice, setBoardPrice)
+    } else {
+      alert('Please fill all fields')
+    }
 
     // console.log(boards)
   }
 
   const handleDeleteBoard = () => {
     let newBoards = boards.filter((board) => board.boardName !== boardName)
-    console.log('newBoards: ', newBoards)
+    // console.log('newBoards: ', newBoards)
     deleteBoard(boardName, newBoards)
   }
 
@@ -73,23 +78,24 @@ export default () => {
               value={boardTitle}
               onChange={(e) => setBoardTitle(e.currentTarget.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && boardTitle !== '') { onPressEnter() }
+                if (e.key === 'Enter') { onPressEnter() }
               }}
             />
 
-            {/* <NumberInput
+            <NumberInput
               placeholder="Total Amount..."
               className="w-40"
               icon={<BsCurrencyDollar />}
               value={boardPrice}
-              onChange={(e) => setBoardPrice(e.currentTarget.value)}
-            /> */}
+              onChange={setBoardPrice}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') { onPressEnter() }
+              }}
+            />
 
             <button
               className="text-white text-lg px-4 py-1 rounded-sm bg-[#238636] hover:bg-[#2daa46] active:bg-[#238636]"
-              onClick={() => {
-                if (boardTitle !== '') { onPressEnter() }
-              }}
+              onClick={onPressEnter}
             >Add</button>
           </div>
         </div>
@@ -110,8 +116,9 @@ export default () => {
                   }}
                 >
                   <Link href={`/${board.boardName}`}>
-                    <div className="absolute z-0 w-full h-full flex justify-center items-center text-center">
-                      {board.boardName}
+                    <div className="absolute z-0 w-full h-full flex flex-col justify-center items-center text-center">
+                      <div className="text-sm">{board.boardName}</div>
+                      <div className="text-xs mt-2">${board.boardPrice}</div>
                     </div>
                   </Link>
 

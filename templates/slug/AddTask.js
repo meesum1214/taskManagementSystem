@@ -1,7 +1,7 @@
-import { TextInput, Text, Image, SimpleGrid } from "@mantine/core";
+import { TextInput, Text, Image, SimpleGrid, NumberInput } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { BsPlusLg } from "react-icons/bs";
+import { BsCurrencyDollar, BsPlusLg } from "react-icons/bs";
 import { RiCloseLine } from "react-icons/ri";
 import { database, storage } from "../../firebase/initFirebase";
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
@@ -10,13 +10,12 @@ import { ref as ref_storage, uploadBytesResumable, getDownloadURL } from "fireba
 
 export default ({ column, columnId, allTasks }) => {
 
-    // const [boardsData, setBoardsData] = useState({})
-
     const [percent, setPercent] = useState(0)
 
     const router = useRouter();
     const [state, setState] = useState(false)
     const [taskTitle, setTaskTitle] = useState('')
+    const [taskPrice, setTaskPrice] = useState(null)
     const [file, setFile] = useState([]);
 
     const [url, setUrl] = useState(null);
@@ -34,6 +33,10 @@ export default ({ column, columnId, allTasks }) => {
 
 
     const handleAddCard = () => {
+        if (!taskPrice) {
+            alert('Price is mandatory')
+            return
+        }
 
         if (taskTitle !== '' && file.length !== 0) {
             const metadata = {
@@ -100,7 +103,8 @@ export default ({ column, columnId, allTasks }) => {
                             let tempTask = {
                                 id: Math.floor(Math.random() * 90000) + 10000,
                                 content: taskTitle,
-                                img: url
+                                img: url,
+                                price: taskPrice
                             }
                             set(ref(database, router.query.slug + '/tasks/'), {
                                 ...allTasks,
@@ -127,7 +131,8 @@ export default ({ column, columnId, allTasks }) => {
                             let tempTask = {
                                 id: Math.floor(Math.random() * 90000) + 10000,
                                 content: taskTitle,
-                                img: url
+                                img: url,
+                                price: taskPrice
                             }
 
 
@@ -152,7 +157,8 @@ export default ({ column, columnId, allTasks }) => {
                 let tempTask = {
                     id: Math.floor(Math.random() * 90000) + 10000,
                     content: taskTitle,
-                    img: "No Image"
+                    img: "No Image",
+                    price: taskPrice
                 }
                 set(ref(database, router.query.slug + '/tasks/'), {
                     ...allTasks,
@@ -169,7 +175,8 @@ export default ({ column, columnId, allTasks }) => {
                 let tempTask = {
                     id: Math.floor(Math.random() * 90000) + 10000,
                     content: taskTitle,
-                    img: "No Image"
+                    img: "No Image",
+                    price: taskPrice
                 }
 
                 set(ref(database, router.query.slug + '/tasks/'), {
@@ -186,20 +193,6 @@ export default ({ column, columnId, allTasks }) => {
                 })
             }
         } else if (file.length !== 0 && taskTitle === '') {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             const metadata = {
                 contentType: 'image/jpeg'
@@ -272,7 +265,8 @@ export default ({ column, columnId, allTasks }) => {
                             let tempTask = {
                                 id: Math.floor(Math.random() * 90000) + 10000,
                                 content: "No Title",
-                                img: url
+                                img: url,
+                                price: taskPrice
                             }
 
                             set(ref(database, router.query.slug + '/tasks/'), {
@@ -291,18 +285,6 @@ export default ({ column, columnId, allTasks }) => {
                     })
                 },
             );
-
-
-
-
-
-
-
-
-
-
-
-
 
         }
 
@@ -338,6 +320,18 @@ export default ({ column, columnId, allTasks }) => {
                             }}
                         />
                         <div className="my-4">
+                            <NumberInput
+                                placeholder="Task Price..."
+                                className="w-full"
+                                icon={<BsCurrencyDollar />}
+                                value={taskPrice}
+                                onChange={setTaskPrice}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') { handleAddCard(); setState(false) }
+                                }}
+                            />
+                        </div>
+                        <div className="mb-4">
                             <Dropzone accept={IMAGE_MIME_TYPE} onDrop={setFile}
                                 sx={(theme) => ({
                                     height: 40,

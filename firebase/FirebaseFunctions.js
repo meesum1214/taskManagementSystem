@@ -61,14 +61,15 @@ export const deleteColumn = (slug, columnId, newColumnOrder) => {
 }
 
 
-export const addNewBoard = (boardTitle, setBoardTitle, boards) => {
+export const addNewBoard = (boardTitle, setBoardTitle, boards, boardPrice, setBoardPrice) => {
     set(ref(database, `${boardTitle}/`), {
         tasks: [
             null,
             {
                 "content": "Sample Task",
                 "id": 1,
-                "img": "/img1.jpg"
+                "img": "/img1.jpg",
+                "price": 100,
             }
         ],
         columns: {
@@ -83,16 +84,17 @@ export const addNewBoard = (boardTitle, setBoardTitle, boards) => {
 
     if (boards) {
         set(ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`), [
-            ...boards, { boardName: boardTitle }
+            ...boards, { boardName: boardTitle, boardPrice: boardPrice }
         ])
     }
     else {
         set(ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`), [
-            { boardName: boardTitle }
+            { boardName: boardTitle, boardPrice: boardPrice }
         ])
     }
 
     setBoardTitle('')
+    setBoardPrice(null)
 }
 
 export const deleteBoard = (boardName, newBoard) => {
@@ -101,7 +103,7 @@ export const deleteBoard = (boardName, newBoard) => {
             console.log('Board deleted');
             set(ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`), newBoard)
                 .then(() => {
-                    console.log('Board deleted from accessUser');
+                    // console.log('Board deleted from accessUser');
                     // alert('Board deleted')
                     return
                 })
@@ -173,7 +175,7 @@ export const getAssignedBoards = (selectedWorker, setAssignedBoards) => {
     try {
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
-            // console.log('assignedBoards', data)
+            // console.log('assignedBoards>>>> ', data)
             setAssignedBoards(data)
         });
     }
@@ -216,6 +218,27 @@ export const getAllUsers = (id, router) => {
                         localStorage.removeItem('peretz-auth-token')
                         router.push('/login')
                     }
+                }
+            })
+        });
+    }
+    catch (err) {
+        console.log(err)
+        alert(err)
+    }
+}
+
+export const getUserData = (id, setUserData) => {
+    const dbRef = ref(database, `allUsers/`);
+
+    try {
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            // console.log('allUsers', data)
+            data.map((item) => {
+                if (item.id === id) {
+                    setUserData(item)
+                    // console.log('userData: ', item)
                 }
             })
         });

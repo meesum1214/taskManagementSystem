@@ -146,6 +146,7 @@ const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds, slug, 
                                                         className="w-[100%] rounded-sm mt-2"
                                                     />
                                                 }
+                                                <div className="mt-2">Price: <span className="text-green-500">${task.price}</span></div>
                                             </div>
                                         )}
                                     </Draggable>

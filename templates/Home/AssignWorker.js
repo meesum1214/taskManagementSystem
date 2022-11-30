@@ -22,28 +22,41 @@ export default ({ boards }) => {
             return
         }
 
-        getAssignedBoards(selectedWorker, setAssignedBoards)
+        // getAssignedBoards(selectedWorker, setAssignedBoards)
 
-        let temp = assignedBoards.map((item, i) => {
-            return item.boardName
-        }).includes(selectedTaskName)
-
-        if (!temp) {
+        if (assignedBoards) {
+            if (!assignedBoards.map((item) => item.boardName).includes(selectedTaskName)) {
+                set(ref(database, `accessUser/${selectedWorker}/`), [
+                    ...assignedBoards,
+                    { boardName: selectedTaskName }
+                ]).then(() => {
+                    // setSelectedWorker(null)
+                    setSelectedTaskName(null)
+                    // console.log('Board deleted from accessUser');
+                    // console.log('assignedBoards: ', assignedBoards);
+                }).catch((error) => {
+                    setSelectedWorker(null)
+                    setSelectedTaskName(null)
+                    console.log(error);
+                    alert(error)
+                })
+            } else {
+                alert('Worker already assigned to this task')
+            }
+        } else {
             set(ref(database, `accessUser/${selectedWorker}/`), [
-                ...assignedBoards,
                 { boardName: selectedTaskName }
             ]).then(() => {
-                setSelectedWorker(null)
+                // setSelectedWorker(null)
                 setSelectedTaskName(null)
-                console.log('Board deleted from accessUser');
+                // console.log('Board deleted from accessUser');
+                // console.log('assignedBoards: ', assignedBoards);
             }).catch((error) => {
                 setSelectedWorker(null)
                 setSelectedTaskName(null)
                 console.log(error);
                 alert(error)
             })
-        } else {
-            alert('Worker already assigned to this task')
         }
 
     }
@@ -116,7 +129,10 @@ export default ({ boards }) => {
                         })}
                         className="mr-2"
                         value={selectedTaskName}
-                        onChange={setSelectedTaskName}
+                        onChange={(e) => {
+                            setSelectedTaskName(e)
+                            getAssignedBoards(selectedWorker, setAssignedBoards)
+                        }}
                     />
                 </div>
 
