@@ -200,26 +200,28 @@ export const getWorkerBoards = (workerId, setWorkerBoards) => {
     }
 }
 
-// export const getAllUsers = (id, setAdmin) => {
-//     const dbRef = ref(database, `allUsers/`);
+export const getAllUsers = (id, router) => {
+    const dbRef = ref(database, `allUsers/`);
 
-//     try {
-//         onValue(dbRef, (snapshot) => {
-//             const data = snapshot.val();
-//             // console.log('allUsers', data)
-//             // setAllUsers(data)
-//             data.map((item) => {
-//                 if (item.id === id) {
-//                     // console.log('item', item)
-//                     data.map((item) => {
-//                         return item.role
-//                     }).includes("admin") ? console.log('you are admin') : setAdmin(false)
-//                 }
-//             })
-//         });
-//     }
-//     catch (err) {
-//         console.log(err)
-//         alert(err)
-//     }
-// }
+    try {
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            // console.log('allUsers', data)
+            // setAllUsers(data)
+            data.map((item) => {
+                if (item.id === id) {
+                    if (item.role !== 'admin') {
+                        alert('you dont have access rights')
+                        localStorage.removeItem('peretz-user-id')
+                        localStorage.removeItem('peretz-auth-token')
+                        router.push('/login')
+                    }
+                }
+            })
+        });
+    }
+    catch (err) {
+        console.log(err)
+        alert(err)
+    }
+}

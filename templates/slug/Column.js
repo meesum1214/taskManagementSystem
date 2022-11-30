@@ -119,8 +119,10 @@ const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds, slug, 
                                                     setTaskIdHover(null)
                                                 }}
                                             >
-                                                <div className="w-full flex justify-between">
-                                                    <div className="w-[95%]">{task.content}</div>
+                                                <div className={`w-full flex ${task.content === "No Title" ? 'justify-end' : 'justify-between'}`}>
+                                                    {
+                                                        task.content !== "No Title" && <div className="w-[95%]">{task.content}</div>
+                                                    }
                                                     <div className="flex">
                                                         <AiFillDelete
                                                             size={16}
@@ -137,11 +139,13 @@ const Column = ({ column, tasks, columnId, allTasks, setLoading, taskIds, slug, 
                                                         />
                                                     </div>
                                                 </div>
-                                                <img
-                                                    src={task.img}
-                                                    alt={task.img}
-                                                    className="w-[100%] rounded-sm mt-2"
-                                                />
+                                                {
+                                                    task.img !== "No Image" && <img
+                                                        src={task.img}
+                                                        alt={task.img}
+                                                        className="w-[100%] rounded-sm mt-2"
+                                                    />
+                                                }
                                             </div>
                                         )}
                                     </Draggable>

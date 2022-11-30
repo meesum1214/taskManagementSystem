@@ -35,84 +35,77 @@ export default ({ column, columnId, allTasks }) => {
 
     const handleAddCard = () => {
 
-        if (!taskTitle && !file) {
-            alert('Please add a title and image')
-            return
-        }
+        if (taskTitle !== '' && file.length !== 0) {
+            const metadata = {
+                contentType: 'image/jpeg'
+            };
 
-        const metadata = {
-            contentType: 'image/jpeg'
-        };
+            const storageRef = ref_storage(storage, 'taskimages/' + file[0].name);
+            const uploadTask = uploadBytesResumable(storageRef, file[0], metadata);
 
-        const storageRef = ref_storage(storage, 'taskimages/' + file[0].name);
-        const uploadTask = uploadBytesResumable(storageRef, file[0], metadata);
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                    const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    // console.log('Upload is ' + progress + '% done');
+                    switch (snapshot.state) {
+                        case 'paused':
+                            // console.log('Upload is paused');
+                            setPercent(progress)
+                            break;
+                        case 'running':
+                            // console.log('Upload is running');
+                            setPercent(progress)
+                            break;
+                    }
+                },
+                (error) => {
+                    switch (error.code) {
+                        case 'storage/unauthorized':
+                            // User doesn't have permission to access the object
+                            console.log('User doesn\'t have permission to access the object');
+                            break;
+                        case 'storage/canceled':
+                            // User canceled the upload
+                            console.log('User canceled the upload');
+                            break;
 
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                // console.log('Upload is ' + progress + '% done');
-                switch (snapshot.state) {
-                    case 'paused':
-                        // console.log('Upload is paused');
-                        setPercent(progress)
-                        break;
-                    case 'running':
-                        // console.log('Upload is running');
-                        setPercent(progress)
-                        break;
-                }
-            },
-            (error) => {
-                // A full list of error codes is available at
-                // https://firebase.google.com/docs/storage/web/handle-errors
-                switch (error.code) {
-                    case 'storage/unauthorized':
-                        // User doesn't have permission to access the object
-                        console.log('User doesn\'t have permission to access the object');
-                        break;
-                    case 'storage/canceled':
-                        // User canceled the upload
-                        console.log('User canceled the upload');
-                        break;
+                        // ...
 
-                    // ...
-
-                    case 'storage/unknown':
-                        // Unknown error occurred, inspect error.serverResponse
-                        console.log('Unknown error occurred, inspect error.serverResponse');
-                        break;
-                }
-            },
-            () => {
-                // Upload completed successfully, now we can get the download URL
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    // console.log('File available at', downloadURL);
-                    setUrl(downloadURL)
-                    return downloadURL
-                }).then((url) => {
-                    // console.log(allTasks)
-                    if (column.taskIds.length === 0) {
-                        // let b = allTasks[allTasks.length - 1].id + 1
-                        // let t = { ...allTasks };
+                        case 'storage/unknown':
+                            // Unknown error occurred, inspect error.serverResponse
+                            console.log('Unknown error occurred, inspect error.serverResponse');
+                            break;
+                    }
+                },
+                () => {
+                    // Upload completed successfully, now we can get the download URL
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        // console.log('File available at', downloadURL);
+                        setUrl(downloadURL)
+                        return downloadURL
+                    }).then((url) => {
+                        // console.log(allTasks)
+                        if (column.taskIds.length === 0) {
+                            // let b = allTasks[allTasks.length - 1].id + 1
+                            // let t = { ...allTasks };
 
 
-                        // t[b] = {
-                        //     id: allTasks[allTasks.length - 1].id + 1,
-                        //     content: taskTitle,
-                        //     img: url
-                        // }
+                            // t[b] = {
+                            //     id: allTasks[allTasks.length - 1].id + 1,
+                            //     content: taskTitle,
+                            //     img: url
+                            // }
 
-                        let tempTask = {
-                            id: Math.floor(Math.random() * 90000) + 10000,
-                            content: taskTitle,
-                            img: url
-                        }
-                        set(ref(database, router.query.slug + '/tasks/'), {
-                            ...allTasks,
-                            [tempTask.id]: tempTask
-                        })
-                            .then(() => {
+                            let tempTask = {
+                                id: Math.floor(Math.random() * 90000) + 10000,
+                                content: taskTitle,
+                                img: url
+                            }
+                            set(ref(database, router.query.slug + '/tasks/'), {
+                                ...allTasks,
+                                [tempTask.id]: tempTask
+                            }).then(() => {
                                 set(ref(database, `${router.query.slug}/columns/${columnId}`), {
                                     ...column,
                                     taskIds: [
@@ -120,42 +113,199 @@ export default ({ column, columnId, allTasks }) => {
                                     ]
                                 })
                             })
-                    }
-
-                    else {
-                        // let b = allTasks[allTasks.length - 1].id + 1
-                        // let t = { ...allTasks };
+                        } else {
+                            // let b = allTasks[allTasks.length - 1].id + 1
+                            // let t = { ...allTasks };
 
 
-                        // t[b] = {
-                        //     id: allTasks[allTasks.length - 1].id + 1,
-                        //     content: taskTitle,
-                        //     img: url
-                        // }
+                            // t[b] = {
+                            //     id: allTasks[allTasks.length - 1].id + 1,
+                            //     content: taskTitle,
+                            //     img: url
+                            // }
 
-                        let tempTask = {
-                            id: Math.floor(Math.random() * 90000) + 10000,
-                            content: taskTitle,
-                            img: url
-                        }
+                            let tempTask = {
+                                id: Math.floor(Math.random() * 90000) + 10000,
+                                content: taskTitle,
+                                img: url
+                            }
 
 
-                        set(ref(database, router.query.slug + '/tasks/'), {
-                            ...allTasks,
-                            [tempTask.id]: tempTask
-                        }).then(() => {
-                            set(ref(database, `${router.query.slug}/columns/${columnId}`), {
-                                ...column,
-                                taskIds: [
-                                    ...column.taskIds,
-                                    tempTask.id
-                                ]
+                            set(ref(database, router.query.slug + '/tasks/'), {
+                                ...allTasks,
+                                [tempTask.id]: tempTask
+                            }).then(() => {
+                                set(ref(database, `${router.query.slug}/columns/${columnId}`), {
+                                    ...column,
+                                    taskIds: [
+                                        ...column.taskIds,
+                                        tempTask.id
+                                    ]
+                                })
                             })
-                        })
-                    }
+                        }
+                    })
+                },
+            );
+        } else if (taskTitle !== '' && file.length === 0) {
+            if (column.taskIds.length === 0) {
+                let tempTask = {
+                    id: Math.floor(Math.random() * 90000) + 10000,
+                    content: taskTitle,
+                    img: "No Image"
+                }
+                set(ref(database, router.query.slug + '/tasks/'), {
+                    ...allTasks,
+                    [tempTask.id]: tempTask
+                }).then(() => {
+                    set(ref(database, `${router.query.slug}/columns/${columnId}`), {
+                        ...column,
+                        taskIds: [
+                            tempTask.id,
+                        ]
+                    })
                 })
-            },
-        );
+            } else {
+                let tempTask = {
+                    id: Math.floor(Math.random() * 90000) + 10000,
+                    content: taskTitle,
+                    img: "No Image"
+                }
+
+                set(ref(database, router.query.slug + '/tasks/'), {
+                    ...allTasks,
+                    [tempTask.id]: tempTask
+                }).then(() => {
+                    set(ref(database, `${router.query.slug}/columns/${columnId}`), {
+                        ...column,
+                        taskIds: [
+                            ...column.taskIds,
+                            tempTask.id
+                        ]
+                    })
+                })
+            }
+        } else if (file.length !== 0 && taskTitle === '') {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            const metadata = {
+                contentType: 'image/jpeg'
+            };
+
+            const storageRef = ref_storage(storage, 'taskimages/' + file[0].name);
+            const uploadTask = uploadBytesResumable(storageRef, file[0], metadata);
+
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                    const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    // console.log('Upload is ' + progress + '% done');
+                    switch (snapshot.state) {
+                        case 'paused':
+                            // console.log('Upload is paused');
+                            setPercent(progress)
+                            break;
+                        case 'running':
+                            // console.log('Upload is running');
+                            setPercent(progress)
+                            break;
+                    }
+                },
+                (error) => {
+                    switch (error.code) {
+                        case 'storage/unauthorized':
+                            // User doesn't have permission to access the object
+                            console.log('User doesn\'t have permission to access the object');
+                            break;
+                        case 'storage/canceled':
+                            // User canceled the upload
+                            console.log('User canceled the upload');
+                            break;
+
+                        // ...
+
+                        case 'storage/unknown':
+                            // Unknown error occurred, inspect error.serverResponse
+                            console.log('Unknown error occurred, inspect error.serverResponse');
+                            break;
+                    }
+                },
+                () => {
+                    // Upload completed successfully, now we can get the download URL
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        // console.log('File available at', downloadURL);
+                        setUrl(downloadURL)
+                        return downloadURL
+                    }).then((url) => {
+                        // console.log(allTasks)
+                        if (column.taskIds.length === 0) {
+                            let tempTask = {
+                                id: Math.floor(Math.random() * 90000) + 10000,
+                                content: "No Title",
+                                img: url
+                            }
+                            set(ref(database, router.query.slug + '/tasks/'), {
+                                ...allTasks,
+                                [tempTask.id]: tempTask
+                            }).then(() => {
+                                set(ref(database, `${router.query.slug}/columns/${columnId}`), {
+                                    ...column,
+                                    taskIds: [
+                                        tempTask.id,
+                                    ]
+                                })
+                            })
+                        } else {
+                            let tempTask = {
+                                id: Math.floor(Math.random() * 90000) + 10000,
+                                content: "No Title",
+                                img: url
+                            }
+
+                            set(ref(database, router.query.slug + '/tasks/'), {
+                                ...allTasks,
+                                [tempTask.id]: tempTask
+                            }).then(() => {
+                                set(ref(database, `${router.query.slug}/columns/${columnId}`), {
+                                    ...column,
+                                    taskIds: [
+                                        ...column.taskIds,
+                                        tempTask.id
+                                    ]
+                                })
+                            })
+                        }
+                    })
+                },
+            );
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+
 
         setState(false)
         setTaskTitle('')

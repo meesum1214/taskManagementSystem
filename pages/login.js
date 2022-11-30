@@ -45,7 +45,8 @@ export default () => {
             <div className={`double-up fixed w-screen h-screen ${Loading ? 'flex' : 'hidden'} justify-center items-center bg-[#ffffff3b]`} style={{ display: !Loading && "none" }}></div>
 
             {/* Create login form with tailwind css */}
-            <div className="flex items-center justify-center h-screen">
+            <div className="flex flex-col items-center justify-center h-screen">
+                <div className="text-white text-5xl font-bold flex justify-center mb-10">Admin Panel</div>
                 <div className="w-full max-w-md">
                     <div className="flex justify-between items-center w-full px-12 h-[60px] bg-[#242731] rounded-sm rounded-b-none">
                         <div className="text-xl text-white font-bold text-center">
@@ -99,7 +100,7 @@ export default () => {
                     </div>
                     <div className="flex justify-between items-center">
                         <div className="text-gray-500 text-xs">
-                            &copy;2022 Salman. All rights reserved.
+                            &copy;2022 Naqvi. All rights reserved.
                         </div>
                         <div className="text-gray-500 text-xs flex">
                             Dont have an account?&nbsp;

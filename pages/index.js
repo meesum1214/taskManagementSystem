@@ -1,4 +1,4 @@
-import { TextInput } from "@mantine/core"
+import { NumberInput, TextInput } from "@mantine/core"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { addNewBoard, deleteBoard, getAllUsers, getBoards, getWorkerBoards, getWorkers } from "../firebase/FirebaseFunctions"
@@ -7,6 +7,7 @@ import NavBar from "../components/NavBar";
 import { AiFillDelete } from "react-icons/ai";
 import AssignWorker from "../templates/Home/AssignWorker";
 import WorkerBoards from "../templates/Home/WorkerBoards";
+import { BsCurrencyDollar } from "react-icons/bs";
 import { ref, set } from "firebase/database";
 import { database } from "../firebase/initFirebase";
 
@@ -15,6 +16,8 @@ export default () => {
   const [workers, setWorkers] = useState([])
 
   const [boardTitle, setBoardTitle] = useState('')
+  const [boardPrice, setBoardPrice] = useState(null)
+
   const [boards, setBoards] = useState([])
   const [Loading, setLoading] = useState(true);
 
@@ -23,19 +26,10 @@ export default () => {
 
   const router = useRouter()
 
-  // const [admin, setAdmin] = useState(true)
-
-
   useEffect(() => {
     // set(ref(database, '/'), null)
 
-    // getAllUsers(localStorage.getItem('peretz-user-id'), setAdmin)
-
-    // if (admin) {
-    //   localStorage.removeItem('peretz-worker-auth-token')
-    //   localStorage.removeItem('peretz-worker-user-id')
-    //   router.push('/login')
-    // }
+    getAllUsers(localStorage.getItem('peretz-user-id'), router)
 
     if (!localStorage.getItem('peretz-auth-token')) {
       router.push('/login')
@@ -72,7 +66,7 @@ export default () => {
         <div className="w-[90%] mt-10 mb-4">
           <div className="text-5xl text-gray-200 font-bold mb-4">Create your board</div>
 
-          <div className="flex justify-between  w-64">
+          <div className="flex justify-between w-[410px]">
             <TextInput
               placeholder="Your Board Title..."
               className="w-44"
@@ -82,6 +76,14 @@ export default () => {
                 if (e.key === 'Enter' && boardTitle !== '') { onPressEnter() }
               }}
             />
+
+            {/* <NumberInput
+              placeholder="Total Amount..."
+              className="w-40"
+              icon={<BsCurrencyDollar />}
+              value={boardPrice}
+              onChange={(e) => setBoardPrice(e.currentTarget.value)}
+            /> */}
 
             <button
               className="text-white text-lg px-4 py-1 rounded-sm bg-[#238636] hover:bg-[#2daa46] active:bg-[#238636]"
