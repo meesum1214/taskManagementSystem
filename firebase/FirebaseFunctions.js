@@ -60,8 +60,24 @@ export const deleteColumn = (slug, columnId, newColumnOrder) => {
 
 }
 
+export const getCustomerBoards = (customerId, setCustomerBoards) => {
+    const dbRef = ref(database, `accessUser/${customerId}/`);
 
-export const addNewBoard = (boardTitle, setBoardTitle, boards, boardPrice, setBoardPrice) => {
+    try {
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            // console.log(data)
+            setCustomerBoards(data)
+        });
+    }
+    catch (err) {
+        console.log(err)
+        setCustomerBoards([])
+    }
+}
+
+
+export const addNewBoard = (boardTitle, setBoardTitle, boards, boardPrice, setBoardPrice, selectedCustomer, setSelectedCustomer, customerBoards) => {
     set(ref(database, `${boardTitle}/`), {
         tasks: [
             null,
@@ -82,29 +98,55 @@ export const addNewBoard = (boardTitle, setBoardTitle, boards, boardPrice, setBo
         columnOrder: ["column-1"],
     });
 
-    if (boards) {
-        set(ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`), [
-            ...boards, { boardName: boardTitle, boardPrice: boardPrice }
-        ])
-    }
-    else {
-        set(ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`), [
-            { boardName: boardTitle, boardPrice: boardPrice }
-        ])
-    }
+    let customerName = ref(database, `allUsers/`)
+    onValue(customerName, (snapshot) => {
+        const data = snapshot.val();
+
+        data.map((item) => {
+            if (item.id === selectedCustomer) {
+                // customerName = item.name
+                // console.log('customerName: ', item);
+                if (!customerBoards) {
+                    set(ref(database, `accessUser/${selectedCustomer}/`), [
+                        { boardName: boardTitle, boardPrice: boardPrice, customer: item.fName + " " + item.lName, customerId: item.id }
+                    ])
+                } else {
+                    set(ref(database, `accessUser/${selectedCustomer}/`), [
+                        ...customerBoards,
+                        { boardName: boardTitle, boardPrice: boardPrice, customer: item.fName + " " + item.lName, customerId: item.id }
+                    ])
+                }
+
+
+
+                if (boards) {
+                    set(ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`), [
+                        ...boards, { boardName: boardTitle, boardPrice: boardPrice, customer: item.fName + " " + item.lName, customerId: item.id }
+                    ])
+                }
+                else {
+                    set(ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`), [
+                        { boardName: boardTitle, boardPrice: boardPrice, customer: item.fName + " " + item.lName, customerId: item.id }
+                    ])
+                }
+            }
+        })
+    });
+
+
 
     setBoardTitle('')
     setBoardPrice(null)
+    setSelectedCustomer(null)
 }
 
-export const deleteBoard = (boardName, newBoard) => {
+export const deleteBoard = (boardName, newBoard, customerId, newCustomerBoards) => {
     remove(ref(database, boardName))
         .then(() => {
             console.log('Board deleted');
             set(ref(database, `accessUser/${localStorage.getItem('peretz-user-id')}/`), newBoard)
                 .then(() => {
-                    // console.log('Board deleted from accessUser');
-                    // alert('Board deleted')
+                    set(ref(database, `accessUser/${customerId}/`), newCustomerBoards)
                     return
                 })
                 .catch((error) => {
@@ -246,5 +288,21 @@ export const getUserData = (id, setUserData) => {
     catch (err) {
         console.log(err)
         alert(err)
+    }
+}
+
+export const getCustomers = (setCustomers) => {
+    const dbRef = ref(database, `roles/customers`);
+
+    try {
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            // console.log('customers: ', data)
+            setCustomers(data)
+        });
+    }
+    catch (err) {
+        console.log(err)
+        setCustomers([])
     }
 }

@@ -1,7 +1,7 @@
-import { NumberInput, TextInput } from "@mantine/core"
+import { NumberInput, Select, TextInput } from "@mantine/core"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { addNewBoard, deleteBoard, getAllUsers, getBoards, getWorkerBoards, getWorkers } from "../firebase/FirebaseFunctions"
+import { addNewBoard, deleteBoard, getAllUsers, getBoards, getCustomerBoards, getCustomers, getWorkerBoards, getWorkers } from "../firebase/FirebaseFunctions"
 import { useRouter } from "next/router";
 import NavBar from "../components/NavBar";
 import { AiFillDelete } from "react-icons/ai";
@@ -14,9 +14,12 @@ import { database } from "../firebase/initFirebase";
 
 export default () => {
   const [workers, setWorkers] = useState([])
+  const [customers, setCustomers] = useState([])
+  const [customerBoards, setCustomerBoards] = useState([])
 
   const [boardTitle, setBoardTitle] = useState('')
   const [boardPrice, setBoardPrice] = useState(null)
+  const [selectedCustomer, setSelectedCustomer] = useState(null)
 
   const [boards, setBoards] = useState([])
   const [Loading, setLoading] = useState(true);
@@ -28,7 +31,6 @@ export default () => {
 
   useEffect(() => {
     // set(ref(database, '/'), null)
-    setLoading(false)
 
     getAllUsers(localStorage.getItem('peretz-user-id'), router)
 
@@ -37,27 +39,20 @@ export default () => {
     }
     getBoards({ setBoards, setLoading })
     getWorkers(setWorkers)
+    getCustomers(setCustomers)
   }, [])
 
   const onPressEnter = () => {
 
-    if (boardTitle && boardPrice) {
+    if (boardTitle && boardPrice && selectedCustomer) {
       let temp = boards?.map((item, i) => {
         return item.boardName
       }).includes(boardTitle)
 
-      temp ? alert('Board already exists') : addNewBoard(boardTitle, setBoardTitle, boards, boardPrice, setBoardPrice)
+      temp ? alert('Board already exists') : addNewBoard(boardTitle, setBoardTitle, boards, boardPrice, setBoardPrice, selectedCustomer, setSelectedCustomer, customerBoards)
     } else {
       alert('Please fill all fields')
     }
-
-    // console.log(boards)
-  }
-
-  const handleDeleteBoard = () => {
-    let newBoards = boards.filter((board) => board.boardName !== boardName)
-    // console.log('newBoards: ', newBoards)
-    deleteBoard(boardName, newBoards)
   }
 
   return (
@@ -71,10 +66,10 @@ export default () => {
         <div className="w-[90%] mt-10 mb-4">
           <div className="text-5xl text-gray-200 font-bold mb-4">Create your board</div>
 
-          <div className="flex justify-between w-[410px]">
+          <div className="flex">
             <TextInput
               placeholder="Your Board Title..."
-              className="w-44"
+              className="w-44 mr-2"
               value={boardTitle}
               onChange={(e) => setBoardTitle(e.currentTarget.value)}
               onKeyDown={(e) => {
@@ -82,9 +77,47 @@ export default () => {
               }}
             />
 
+            <Select
+              placeholder="Select Customer..."
+              data={
+                customers ?
+                  customers.map((customer) => {
+                    return { label: customer.name, value: customer.id }
+                  })
+                  :
+                  [{ label: 'No Customers', value: 'No Customers' }]
+              }
+              searchable
+              clearable
+              nothingFound="No options"
+              styles={(theme) => ({
+                item: {
+                  // applies styles to selected item
+                  '&[data-selected]': {
+                    '&, &:hover': {
+                      backgroundColor: 'gray',
+                      color: "white",
+                    },
+                  },
+
+                  // applies styles to hovered item (with mouse or keyboard)
+                  '&[data-hovered]': {},
+                },
+              })}
+              className="w-44 mr-2"
+              value={selectedCustomer}
+              onChange={(e) => {
+                setSelectedCustomer(e)
+                getCustomerBoards(e, setCustomerBoards)
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') { onPressEnter() }
+              }}
+            />
+
             <NumberInput
               placeholder="Total Amount..."
-              className="w-40"
+              className="w-40 mr-2"
               icon={<BsCurrencyDollar />}
               value={boardPrice}
               onChange={setBoardPrice}
@@ -106,26 +139,32 @@ export default () => {
               boards.map((board, i) => (
                 <div
                   key={i}
-                  className="relative cursor-pointer w-32 h-32 m-2 bg-[#161B22] shadow-md font-semibold text-white rounded-md border border-gray-400"
+                  className="relative cursor-pointer w-52 h-32 m-2 bg-[#161B22] shadow-md font-semibold text-white rounded-md border border-gray-400"
                   onMouseOver={() => {
                     setBoardState(true)
                     setBoardName(board.boardName)
+                    getCustomerBoards(board.customerId, setCustomerBoards)
                   }}
                   onMouseLeave={() => {
                     setBoardState(false)
                   }}
                 >
                   <Link href={`/${board.boardName}`}>
-                    <div className="absolute z-0 w-full h-full flex flex-col justify-center items-center text-center">
-                      <div className="text-sm">{board.boardName}</div>
-                      <div className="text-xs mt-2">${board.boardPrice}</div>
+                    <div className="absolute z-0 w-full h-full flex flex-col justify-center px-3">
+                      <div className="text-sm">Board Name: {board.boardName}</div>
+                      <div className="text-sm my-2">Customer: {board.customer}</div>
+                      <div className="text-sm">Project Amount: <span className="text-green-500">${board.boardPrice}</span> </div>
                     </div>
                   </Link>
 
                   <AiFillDelete
                     size={16}
                     className={`${boardState && board.boardName === boardName ? 'block' : 'hidden'} cursor-pointer transition-all text-white absolute top-2 right-2 z-10`}
-                    onClick={handleDeleteBoard}
+                    onClick={() => {
+                      let newBoards = boards.filter((board) => board.boardName !== boardName)
+                      let newCustomerBoards = customerBoards?.filter((board) => board.boardName !== boardName)
+                      deleteBoard(boardName, newBoards, board.customerId, newCustomerBoards)
+                    }}
                   />
                 </div>
               ))

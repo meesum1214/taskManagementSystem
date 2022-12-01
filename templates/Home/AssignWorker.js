@@ -42,6 +42,7 @@ export default ({ boards }) => {
                 })
             } else {
                 alert('Worker already assigned to this task')
+                setSelectedTaskName(null)
             }
         } else {
             set(ref(database, `accessUser/${selectedWorker}/`), [
