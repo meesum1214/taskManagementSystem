@@ -8,6 +8,12 @@ import { getAdmins, getUsers } from "../firebase/FirebaseFunctions";
 
 export default () => {
 
+    useEffect(() => {
+        if (localStorage.getItem('peretz-auth-token')) {
+            router.push('/')
+          }
+    }, [])
+
     const [allUsers, setAllUsers] = useState([])
     const [allAdmins, setAllAdmins] = useState([]);
 
@@ -109,7 +115,7 @@ export default () => {
         <div>
 
             {/* Loading Wheel */}
-            <div className={`double-up fixed w-screen h-screen ${Loading ? 'flex' : 'hidden'} justify-center items-center bg-[#ffffff3b]`} style={{ display: !Loading && "none" }}></div>
+            <div className={`double-up fixed w-screen h-screen ${Loading ? 'flex' : 'hidden'} justify-center items-center bg-[#ffffff3b]`}></div>
 
             <div className="flex items-center justify-center h-screen">
                 <div className="w-full max-w-md">
