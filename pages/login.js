@@ -108,7 +108,7 @@ export default () => {
                     </div>
                     <div className="flex justify-between items-center">
                         <div className="text-gray-500 text-xs">
-                            &copy;2022 Naqvi. All rights reserved.
+                            &copy;2022 Salman Naqvi. All rights reserved.
                         </div>
                         <div className="text-gray-500 text-xs flex">
                             Dont have an account?&nbsp;
